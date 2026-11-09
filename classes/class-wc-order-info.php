@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\WC;
+namespace lessthanweb\Order_To_Board_Sync\WC;
 
 /**
  * WooCommerce order info methods
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Helper;
-use LTW\Order_To_Board_Sync\Core\Settings;
-use LTW\Order_To_Board_Sync\Core\Logger;
-use LTW\Order_To_Board_Sync\Core\Hooks;
-use LTW\Order_To_Board_Sync\WC\Order_Status;
+use lessthanweb\Order_To_Board_Sync\Core\Helper;
+use lessthanweb\Order_To_Board_Sync\Core\Settings;
+use lessthanweb\Order_To_Board_Sync\Core\Logger;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\WC\Order_Status;
 
 /**
  * WC Class
@@ -78,6 +78,7 @@ class Order_Info {
 		// Get total order cost
 		$data['order_total'] = Helper::wc_price( $order->get_total() );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_ORDER_BASIC_INFO, $data, $order );
 	}
 
@@ -95,38 +96,39 @@ class Order_Info {
 		// Set billing address only if there is any
 		if ( $order->has_billing_address() ) {
 			// Array with billing data can be modified via the filter
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 			$billing_data = apply_filters( Hooks::FILTER_ORDER_BILLING_ADDRESS, 
 				[
 					[
-						'text' => __( 'First name:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'First name:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_first_name(),
 					],
 					[
-						'text' => __( 'Last name:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Last name:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_last_name(),
 					],
 					[
-						'text' => __( 'Company:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Company:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_company(),
 					],
 					[
-						'text' => __( 'Address:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Address:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
 					],
 					[
-						'text' => __( 'City:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'City:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_city(),
 					],
 					[
-						'text' => __( 'State:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'State:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_state(),
 					],
 					[
-						'text' => __( 'Post code:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Post code:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_billing_postcode(),
 					],
 					[
-						'text' => __( 'Country:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Country:', 'lessthanweb-order-to-board-sync' ),
 						'value' => WC()->countries->countries[ $order->get_billing_country() ],
 					],
 				],
@@ -140,6 +142,7 @@ class Order_Info {
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_ORDER_BILLING_ADDRESS_TEXT, $billing_text, $order );
 	}
 
@@ -156,38 +159,39 @@ class Order_Info {
 
 		// Set shipping address only if there is any
 		if ( $order->has_shipping_address() ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 			$shipping_data = apply_filters( Hooks::FILTER_ORDER_SHIPPING_ADDRESS,
 				[
 					[
-						'text' => __( 'First name:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'First name:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_first_name(),
 					],
 					[
-						'text' => __( 'Last name:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Last name:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_last_name(),
 					],
 					[
-						'text' => __( 'Company:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Company:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_company(),
 					],
 					[
-						'text' => __( 'Address:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Address:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_address_1() . ' ' . $order->get_shipping_address_2(),
 					],
 					[
-						'text' => __( 'City:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'City:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_city(),
 					],
 					[
-						'text' => __( 'State:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'State:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_state(),
 					],
 					[
-						'text' => __( 'Post code:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Post code:', 'lessthanweb-order-to-board-sync' ),
 						'value' => $order->get_shipping_postcode(),
 					],
 					[
-						'text' => __( 'Country:', 'ltw-order-to-board-sync' ),
+						'text' => __( 'Country:', 'lessthanweb-order-to-board-sync' ),
 						'value' => WC()->countries->countries[ $order->get_shipping_country() ],
 					],
 				],
@@ -201,6 +205,7 @@ class Order_Info {
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_ORDER_SHIPPING_ADDRESS_TEXT, $shipping_text, $order );
 	}
 
@@ -246,6 +251,7 @@ class Order_Info {
 			$data['shipping_methods'][] = $method_data;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_ORDER_SHIPPING_METHOD, $data, $order );
 	}
 
@@ -287,7 +293,7 @@ class Order_Info {
 			if ( ! empty( $data['shipping_methods'] ) ) {
 				foreach( $data['shipping_methods'] as $method ) {
 					$shipping_lines[] = sprintf(
-						__( '%s → %s (cost: %s, tax: %s) %s%s%s', 'ltw-order-to-board-sync' ),
+						__( '%1$s → %2$s (cost: %3$s, tax: %4$s) %5$s%6$s%7$s', 'lessthanweb-order-to-board-sync' ),
 						$method['name'],
 						Helper::wc_price( $method['total'] ),
 						Helper::wc_price( $method['cost'] ),
@@ -302,11 +308,12 @@ class Order_Info {
 			}
 
 			// Now let's inlcude the totals
-			$text .= __( 'Total shipping:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total_shipping'] ) . Helper::new_line();
-			$text .= __( 'Total tax:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total_tax'] ) . Helper::new_line();
-			$text .= __( 'Total:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total'] ) . Helper::new_line();
+			$text .= __( 'Total shipping:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total_shipping'] ) . Helper::new_line();
+			$text .= __( 'Total tax:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total_tax'] ) . Helper::new_line();
+			$text .= __( 'Total:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $data['total'] ) . Helper::new_line();
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_ORDER_SHIPPING_METHOD, $text, $order );
 	}
 
@@ -325,11 +332,11 @@ class Order_Info {
 	public function get_order_costs( object $order ): string {
 		$text = '';
 
-		$text .= __( 'Subtotal:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_subtotal() ) . Helper::new_line();
-		$text .= __( 'Discount:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_discount_total() ) . Helper::new_line();
-		$text .= __( 'Shipping:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_shipping_total() ) . Helper::new_line();
-		$text .= __( 'Tax:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_total_tax() ) . Helper::new_line();
-		$text .= __( 'Total:', 'ltw-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_total() ) . Helper::new_line();
+		$text .= __( 'Subtotal:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_subtotal() ) . Helper::new_line();
+		$text .= __( 'Discount:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_discount_total() ) . Helper::new_line();
+		$text .= __( 'Shipping:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_shipping_total() ) . Helper::new_line();
+		$text .= __( 'Tax:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_total_tax() ) . Helper::new_line();
+		$text .= __( 'Total:', 'lessthanweb-order-to-board-sync' ) . ' ' . Helper::wc_price( $order->get_total() ) . Helper::new_line();
 
 		return $text;
 	}
@@ -354,6 +361,7 @@ class Order_Info {
 			];
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( HOOKS::FILTER_ORDERED_PRODUCTS, $products, $order );
 	}
 }

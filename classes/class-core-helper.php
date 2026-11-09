@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 /**
  * Contains code for Trello API
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -128,22 +128,22 @@ class Helper {
         // Let's reverse the items so that the last added is the first one.
         $history = array_reverse( $history );
 
-        $html = '<ul class="ltw-order-to-board-sync-card-history">';
+        $html = '<ul class="lessthanweb-order-to-board-sync-card-history">';
 
         //  Build final HTML
         foreach ( $history as $key => $line ) {
-            $note_text = sprintf( 
-                __( 'Created a card in board <strong>%s</strong>, list <strong>%s</strong> with status <strong>%s</strong>', 'ltw-order-to-board-sync' ),
-                $line['board_name'],
-                $line['list_name'],
-                wc_get_order_status_name( $line['status'] )
+            $note_text = sprintf(
+                __( 'Created a card in board <strong>%1$s</strong>, list <strong>%2$s</strong> with status <strong>%3$s</strong>', 'lessthanweb-order-to-board-sync' ),
+                esc_html( $line['board_name'] ),
+                esc_html( $line['list_name'] ),
+                esc_html( wc_get_order_status_name( $line['status'] ) )
             );
 
-			$note_text = apply_filters( Hooks::FILTER_CARD_HISTORY_NOTE, $note_text, $line );
+			$note_text = apply_filters( Hooks::FILTER_CARD_HISTORY_NOTE, $note_text, $line ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
             $html .= '<li class="content">';
                 $html .= '<div class="note">' . wp_kses_post( $note_text ) . '</div>';
-                $html .= '<div class="date">' . esc_html( date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $line['date'] ) ) . '</div>';
+                $html .= '<div class="date">' . esc_html( gmdate( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $line['date'] ) ) . '</div>';
             $html .= '</li>';
         }
                 

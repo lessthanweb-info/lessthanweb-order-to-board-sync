@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 /**
  * Handles Trello OAuth 2.0 authorization and access-token lifecycle.
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -23,14 +23,14 @@ class Trello_OAuth {
 	 *
 	 * @var	string
 	 */
-	private const TOKEN_OPTION = 'ltw_order_to_board_sync_trello_oauth_tokens';
+	private const TOKEN_OPTION = 'lessthanweb_order_to_board_sync_trello_oauth_tokens';
 
 	/**
 	 * Prefix for transients used to verify the OAuth state.
 	 *
 	 * @var	string
 	 */
-	private const STATE_TRANSIENT_PREFIX = 'ltw_order_to_board_sync_oauth_state_';
+	private const STATE_TRANSIENT_PREFIX = 'lessthanweb_order_to_board_sync_oauth_state_';
 
 	/**
 	 * Atlassian OAuth authorization endpoint.
@@ -65,7 +65,14 @@ class Trello_OAuth {
 	 *
 	 * @var	string
 	 */
-	private const CALLBACK_ACTION = 'ltw_trello_oauth_callback';
+	private const CALLBACK_ACTION = 'lessthanweb_trello_oauth_callback';
+
+	/**
+	 * Ajax nonce
+	 *
+	 * @var	const
+	 */
+	private const API_NONCE = 'lessthanweb-order-to-board-sync-trello-oauth-nonce';
 
 	/**
 	 * Register the authenticated OAuth actions.
@@ -76,9 +83,9 @@ class Trello_OAuth {
 	 * @since	1.0.0
 	 */
 	public function __construct( private Settings $settings, private Logger $logger ) {
-		add_action( 'admin_post_ltw_trello_oauth_connect', [ $this, 'start_authorization' ] );
+		add_action( 'admin_post_lessthanweb_trello_oauth_connect', [ $this, 'start_authorization' ] );
 		add_action( 'admin_post_' . self::CALLBACK_ACTION, [ $this, 'handle_callback' ] );
-		add_action( 'admin_post_ltw_trello_oauth_disconnect', [ $this, 'disconnect' ] );
+		add_action( 'admin_post_lessthanweb_trello_oauth_disconnect', [ $this, 'disconnect' ] );
 		add_filter( Hooks::FILTER_TRELLO_OAUTH_ACCESS_TOKEN, [ $this, 'provide_access_token' ] );
 	}
 
@@ -117,7 +124,7 @@ class Trello_OAuth {
 		$tokens = get_option( self::TOKEN_OPTION, [] );
 
 		if ( ! is_array( $tokens ) || empty( $tokens['access_token'] ) ) {
-			return new \WP_Error( 'trello_oauth_not_connected', __( 'Connect a Trello account in the plugin settings.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_oauth_not_connected', __( 'Connect a Trello account in the plugin settings.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		if ( ! $force_refresh && isset( $tokens['expires_at'] ) && (int) $tokens['expires_at'] > time() + 60 ) {
@@ -125,7 +132,7 @@ class Trello_OAuth {
 		}
 
 		if ( empty( $tokens['refresh_token'] ) ) {
-			return new \WP_Error( 'trello_oauth_refresh_missing', __( 'The Trello authorization has expired. Reconnect your Trello account in the plugin settings.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_oauth_refresh_missing', __( 'The Trello authorization has expired. Reconnect your Trello account in the plugin settings.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		return $this->refresh_access_token( $tokens );
@@ -153,39 +160,52 @@ class Trello_OAuth {
 		$callback_url = $this->get_callback_url();
 
 		$connect_url = wp_nonce_url(
-			admin_url( 'admin-post.php?action=ltw_trello_oauth_connect' ),
-			'ltw_trello_oauth_connect'
+			admin_url( 'admin-post.php?action=lessthanweb_trello_oauth_connect' ),
+			'lessthanweb_trello_oauth_connect'
 		);
 
 		$client_is_configured = $this->settings->get( 'settings', 'trello_api', 'oauth_client_id' ) !== '' && $this->settings->get_oauth_client_secret() !== '';
 		
-		$connect_label = $this->is_connected() ? __( 'Reconnect Trello account', 'ltw-order-to-board-sync' ) : __( 'Connect Trello account', 'ltw-order-to-board-sync' );
+		$connect_label = $this->is_connected() ? __( 'Reconnect Trello account', 'lessthanweb-order-to-board-sync' ) : __( 'Connect Trello account', 'lessthanweb-order-to-board-sync' );
 
-		$html = '<div class="ltw-order-to-board-sync-oauth">';
-		$html .= '<p><strong>' . esc_html__( 'OAuth callback URL', 'ltw-order-to-board-sync' ) . ':</strong> <code>' . esc_html( $callback_url ) . '</code></p>';
-		$html .= '<p>' . esc_html__( 'Register this exact URL in the callback URLs for your Trello OAuth 2.0 client.', 'ltw-order-to-board-sync' ) . '</p>';
+		$html = '<div class="lessthanweb-order-to-board-sync-oauth">';
+		$html .= '<p><strong>' . esc_html__( 'OAuth callback URL', 'lessthanweb-order-to-board-sync' ) . ':</strong> <code>' . esc_html( $callback_url ) . '</code></p>';
+		$html .= '<p>' . esc_html__( 'Register this exact URL in the callback URLs for your Trello OAuth 2.0 client.', 'lessthanweb-order-to-board-sync' ) . '</p>';
 
 		if ( $this->is_connected() ) {
-			$html .= '<p><strong>' . esc_html__( 'Trello account connected.', 'ltw-order-to-board-sync' ) . '</strong></p>';
+			$html .= '<p><strong>' . esc_html__( 'Trello account connected.', 'lessthanweb-order-to-board-sync' ) . '</strong></p>';
 
 			$disconnect_url = wp_nonce_url(
-				admin_url( 'admin-post.php?action=ltw_trello_oauth_disconnect' ),
-				'ltw_trello_oauth_disconnect'
+				admin_url( 'admin-post.php?action=lessthanweb_trello_oauth_disconnect' ),
+				'lessthanweb_trello_oauth_disconnect'
 			);
 
-			$html .= '<p><a class="button" href="' . esc_url( $disconnect_url ) . '">' . esc_html__( 'Disconnect Trello account', 'ltw-order-to-board-sync' ) . '</a></p>';
+			$html .= '<p><a class="button" href="' . esc_url( $disconnect_url ) . '">' . esc_html__( 'Disconnect Trello account', 'lessthanweb-order-to-board-sync' ) . '</a></p>';
 		} else {
-			$html .= '<p><strong>' . esc_html__( 'Trello account not connected.', 'ltw-order-to-board-sync' ) . '</strong></p>';
+			$html .= '<p><strong>' . esc_html__( 'Trello account not connected.', 'lessthanweb-order-to-board-sync' ) . '</strong></p>';
 		}
 
 		if ( $client_is_configured ) {
 			$html .= '<p><a class="button button-primary" href="' . esc_url( $connect_url ) . '">' . esc_html( $connect_label ) . '</a></p>';
 		} else {
-			$html .= '<p>' . esc_html__( 'Enter and save the OAuth client ID and secret above before connecting.', 'ltw-order-to-board-sync' ) . '</p>';
+			$html .= '<p>' . esc_html__( 'Enter and save the OAuth client ID and secret above before connecting.', 'lessthanweb-order-to-board-sync' ) . '</p>';
 		}
 		$html .= '</div>';
 
 		return $html;
+	}
+
+	/**
+	 * Temporarily allow the Atlassian OAuth host so wp_safe_redirect() accepts it.
+	 *
+	 * @param	array	$hosts	Allowed hosts.
+	 * @return	array	Modified list of allowed hosts.
+	 */
+	public function allow_atlassian_redirect_host( array $hosts ): array {
+		// WordPress invokes registered filter callbacks outside this class.
+		$hosts[] = 'auth.atlassian.com';
+
+		return $hosts;
 	}
 
 	/**
@@ -196,16 +216,16 @@ class Trello_OAuth {
 	 */
 	public function start_authorization(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to connect a Trello account.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'You do not have permission to connect a Trello account.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
-		check_admin_referer( 'ltw_trello_oauth_connect' );
+		check_admin_referer( 'lessthanweb_trello_oauth_connect' );
 
 		$client_id = $this->settings->get( 'settings', 'trello_api', 'oauth_client_id' );
 		$client_secret = $this->settings->get_oauth_client_secret();
 
 		if ( $client_id === '' || $client_secret === '' ) {
-			wp_die( esc_html__( 'Save your Trello OAuth client ID and client secret before connecting.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'Save your Trello OAuth client ID and client secret before connecting.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		try {
@@ -213,9 +233,9 @@ class Trello_OAuth {
 			
 			$verifier = $this->base64url_encode( random_bytes( 32 ) );
 		} catch ( \Throwable $exception ) {
-			$this->logger->error( __( 'Unable to generate secure Trello OAuth state.', 'ltw-order-to-board-sync' ), [ 'error' => $exception->getMessage() ] );
+			$this->logger->error( esc_html__( 'Unable to generate secure Trello OAuth state.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $exception->getMessage() ] );
 			
-			wp_die( esc_html__( 'Unable to start secure Trello authorization. Please try again.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'Unable to start secure Trello authorization. Please try again.', 'lessthanweb-order-to-board-sync' ) );
 			
 			return;
 		}
@@ -233,7 +253,7 @@ class Trello_OAuth {
 		);
 
 		if ( $state_saved === false ) {
-			wp_die( esc_html__( 'Unable to securely start Trello authorization. Please try again.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'Unable to securely start Trello authorization. Please try again.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		$challenge = $this->base64url_encode( hash( 'sha256', $verifier, true ) );
@@ -252,7 +272,10 @@ class Trello_OAuth {
 			self::AUTHORIZE_URL
 		);
 
-		wp_redirect( esc_url_raw( $authorize_url ) );
+		// Atlassian is a fixed external host, so the safe redirect helper would reject this authorization URL so we need to do this sh1t ;)
+		add_filter( 'allowed_redirect_hosts', [ $this, 'allow_atlassian_redirect_host' ] );
+		wp_safe_redirect( esc_url_raw( $authorize_url ) );
+		remove_filter( 'allowed_redirect_hosts', [ $this, 'allow_atlassian_redirect_host' ] );
 		die();
 	}
 
@@ -264,10 +287,17 @@ class Trello_OAuth {
 	 */
 	public function handle_callback(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to complete Trello authorization.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'You do not have permission to complete Trello authorization.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
-		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
+		/*
+		* OAuth callback – CSRF is protected by the opaque state parameter + short-lived transient.
+		* WordPress nonces cannot be used here because the redirect originates from Atlassian.
+		*/
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
+		// OAuth query values must be scalar strings before sanitization or verification.
+		$state = isset( $_GET['state'] ) && is_string( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 		$transient_key = self::STATE_TRANSIENT_PREFIX . hash( 'sha256', $state );
 		$authorization = get_transient( $transient_key );
 		delete_transient( $transient_key );
@@ -278,21 +308,23 @@ class Trello_OAuth {
 			|| ! hash_equals( (string) $authorization['state'], $state )
 			|| (int) ( $authorization['user_id'] ?? 0 ) !== get_current_user_id()
 		) {
-			wp_die( esc_html__( 'Trello authorization could not be verified. Start the connection process again.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'Trello authorization could not be verified. Start the connection process again.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		if ( isset( $_GET['error'] ) ) {
-			$error = sanitize_text_field( wp_unslash( $_GET['error'] ) );
+			$error = is_string( $_GET['error'] ) ? sanitize_text_field( wp_unslash( $_GET['error'] ) ) : __( 'Invalid authorization error response.', 'lessthanweb-order-to-board-sync' );
 			
-			$this->logger->error( __( 'Trello OAuth callback returned an authorization error.', 'ltw-order-to-board-sync' ), [ 'error' => $error ] );
+			$this->logger->error( esc_html__( 'Trello OAuth callback returned an authorization error.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $error ] );
 			
-			wp_die( esc_html( sprintf( __( 'Trello authorization was not completed: %s', 'ltw-order-to-board-sync' ), $error ) ) );
+			wp_die( esc_html( sprintf( __( 'Trello authorization was not completed: %s', 'lessthanweb-order-to-board-sync' ), $error ) ) );
 		}
 
-		$code = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
+		$code = isset( $_GET['code'] ) && is_string( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
+
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( $code === '' || empty( $authorization['verifier'] ) ) {
-			wp_die( esc_html__( 'Trello did not return a valid authorization code. Start the connection process again.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'Trello did not return a valid authorization code. Start the connection process again.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		$token_result = $this->request_tokens( [
@@ -303,7 +335,7 @@ class Trello_OAuth {
 		] );
 
 		if ( is_wp_error( $token_result ) ) {
-			$this->logger->error( __( 'Trello OAuth authorization-code exchange failed.', 'ltw-order-to-board-sync' ), [ 'error' => $token_result->get_error_message() ] );
+			$this->logger->error( esc_html__( 'Trello OAuth authorization-code exchange failed.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $token_result->get_error_message() ] );
 			
 			wp_die( esc_html( $token_result->get_error_message() ) );
 		}
@@ -312,7 +344,7 @@ class Trello_OAuth {
 		$access_token = $this->get_access_token();
 
 		if ( is_wp_error( $access_token ) ) {
-			$this->logger->error( __( 'Trello OAuth access-token validation failed.', 'ltw-order-to-board-sync' ), [ 'error' => $access_token->get_error_message() ] );
+			$this->logger->error( esc_html__( 'Trello OAuth access-token validation failed.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $access_token->get_error_message() ] );
 			
 			wp_die( esc_html( $access_token->get_error_message() ) );
 		}
@@ -327,25 +359,22 @@ class Trello_OAuth {
 		);
 
 		$verification_data = is_wp_error( $verification ) ? null : json_decode( wp_remote_retrieve_body( $verification ), true );
-		if ( is_wp_error( $verification )
-			|| wp_remote_retrieve_response_code( $verification ) >= 400
-			|| ! is_array( $verification_data )
-			|| empty( $verification_data['id'] )
-		) {
-			$verification_error = is_wp_error( $verification ) ? $verification->get_error_message() : sprintf( __( 'Trello rejected the authorization or returned an invalid account response (HTTP %d).', 'ltw-order-to-board-sync' ), wp_remote_retrieve_response_code( $verification ) );
+
+		if ( is_wp_error( $verification ) || wp_remote_retrieve_response_code( $verification ) >= 400 || ! is_array( $verification_data ) || empty( $verification_data['id'] ) ) {
+			$verification_error = is_wp_error( $verification ) ? $verification->get_error_message() : sprintf( __( 'Trello rejected the authorization or returned an invalid account response (HTTP %d).', 'lessthanweb-order-to-board-sync' ), wp_remote_retrieve_response_code( $verification ) );
 			
 			delete_option( self::TOKEN_OPTION );
 			
-			$this->logger->error( __( 'Trello OAuth connection validation failed.', 'ltw-order-to-board-sync' ), [ 'error' => $verification_error ] );
+			$this->logger->error( esc_html__( 'Trello OAuth connection validation failed.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $verification_error ] );
 			
 			wp_die( esc_html( $verification_error ) );
 		}
 
 		$this->settings->mark_setup_complete();
 
-		$this->logger->info( __( 'Trello OAuth account connected successfully.', 'ltw-order-to-board-sync' ) );
+		$this->logger->info( esc_html__( 'Trello OAuth account connected successfully.', 'lessthanweb-order-to-board-sync' ) );
 
-		wp_safe_redirect( admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' ) );
 		die();
 	}
 
@@ -357,18 +386,18 @@ class Trello_OAuth {
 	 */
 	public function disconnect(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to disconnect a Trello account.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'You do not have permission to disconnect a Trello account.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
-		check_admin_referer( 'ltw_trello_oauth_disconnect' );
+		check_admin_referer( 'lessthanweb_trello_oauth_disconnect' );
 
 		delete_option( self::TOKEN_OPTION );
 
 		$this->settings->reset_setup_complete();
 
-		$this->logger->info( __( 'Trello OAuth account disconnected.', 'ltw-order-to-board-sync' ) );
+		$this->logger->info( esc_html__( 'Trello OAuth account disconnected.', 'lessthanweb-order-to-board-sync' ) );
 
-		wp_safe_redirect( admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' ) );
 		die();
 	}
 
@@ -388,7 +417,7 @@ class Trello_OAuth {
 		);
 
 		if ( is_wp_error( $result ) ) {
-			$this->logger->error( __( 'Trello OAuth access-token refresh failed.', 'ltw-order-to-board-sync' ), [ 'error' => $result->get_error_message() ] );
+			$this->logger->error( esc_html__( 'Trello OAuth access-token refresh failed.', 'lessthanweb-order-to-board-sync' ), [ 'error' => $result->get_error_message() ] );
 			
 			return $result;
 		}
@@ -431,18 +460,22 @@ class Trello_OAuth {
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
+		// OAuth tokens are opaque credentials, so validate their types without changing their values.
 		if ( $status_code < 200
 			|| $status_code >= 300
 			|| ! is_array( $data )
-			|| empty( $data['access_token'] )
+			|| ! isset( $data['access_token'] )
+			|| ! is_string( $data['access_token'] )
+			|| $data['access_token'] === ''
+			|| ( isset( $data['refresh_token'] ) && ! is_string( $data['refresh_token'] ) )
 			|| ! isset( $data['expires_in'] )
 			|| ! is_numeric( $data['expires_in'] )
 			|| (int) $data['expires_in'] < 1
-			|| ( $grant['grant_type'] === 'authorization_code' && empty( $data['refresh_token'] ) )
+			|| ( $grant['grant_type'] === 'authorization_code' && ( empty( $data['refresh_token'] ) || ! is_string( $data['refresh_token'] ) ) )
 		) {
 			return new \WP_Error(
 				'trello_oauth_token_request_failed',
-				sprintf( __( 'Trello OAuth token request failed (HTTP %d). Check the OAuth client configuration and try again.', 'ltw-order-to-board-sync' ), $status_code )
+				sprintf( __( 'Trello OAuth token request failed (HTTP %d). Check the OAuth client configuration and try again.', 'lessthanweb-order-to-board-sync' ), $status_code )
 			);
 		}
 

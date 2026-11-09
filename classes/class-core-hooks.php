@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 /**
- * Defines all available hooks for the LTW Order-to-Board Sync plugin
+ * Defines all available hooks for the lessthanweb Order-to-Board Sync plugin
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -33,7 +33,7 @@ class Hooks {
 	 * @return	array	Filtered order data
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_BASIC_INFO = 'ltw_order_to_board_sync_order_basic_info';
+	const FILTER_ORDER_BASIC_INFO = 'lessthanweb_order_to_board_sync_order_basic_info';
 	
 	/**
 	 * Filter order billing address.
@@ -45,7 +45,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_BILLING_ADDRESS = 'ltw_order_to_board_sync_order_billing_address';
+	const FILTER_ORDER_BILLING_ADDRESS = 'lessthanweb_order_to_board_sync_order_billing_address';
 
     /**
 	 * Filter order billing address text
@@ -55,7 +55,7 @@ class Hooks {
 	 * @return	string	Filtered billing address
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_BILLING_ADDRESS_TEXT = 'ltw_order_to_board_sync_order_billing_address_text';
+	const FILTER_ORDER_BILLING_ADDRESS_TEXT = 'lessthanweb_order_to_board_sync_order_billing_address_text';
 	
 	/**
 	 * Filter order shipping address.
@@ -67,7 +67,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_SHIPPING_ADDRESS = 'ltw_order_to_board_sync_order_shipping_address';
+	const FILTER_ORDER_SHIPPING_ADDRESS = 'lessthanweb_order_to_board_sync_order_shipping_address';
 
 	/**
 	 * Filter order shipping address text
@@ -77,7 +77,7 @@ class Hooks {
 	 * @return	string	Filtered shipping address
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_SHIPPING_ADDRESS_TEXT = 'ltw_order_to_board_sync_order_shipping_address_text';
+	const FILTER_ORDER_SHIPPING_ADDRESS_TEXT = 'lessthanweb_order_to_board_sync_order_shipping_address_text';
 
 	/**
 	 * Filter shipping method array
@@ -87,7 +87,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_SHIPPING_METHOD = 'ltw_order_to_board_sync_order_shipping_method';
+	const FILTER_ORDER_SHIPPING_METHOD = 'lessthanweb_order_to_board_sync_order_shipping_method';
 
 	/**
 	 * Filter shipping method final text
@@ -97,7 +97,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_SHIPPING_METHOD_TEXT = 'ltw_order_to_board_sync_order_shipping_method_text';
+	const FILTER_ORDER_SHIPPING_METHOD_TEXT = 'lessthanweb_order_to_board_sync_order_shipping_method_text';
 
 	/**
 	 * Filter ordered products
@@ -107,7 +107,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDERED_PRODUCTS = 'ltw_order_to_board_sync_ordered_products';
+	const FILTER_ORDERED_PRODUCTS = 'lessthanweb_order_to_board_sync_ordered_products';
 
 	/**
 	 * Filter admin notice message before display
@@ -116,7 +116,7 @@ class Hooks {
 	 * @return	string	Filtered message
 	 * @since	1.0.0
 	 */
-	const FILTER_ADMIN_NOTICE_MESSAGE = 'ltw_order_to_board_sync_notice_message';
+	const FILTER_ADMIN_NOTICE_MESSAGE = 'lessthanweb_order_to_board_sync_notice_message';
 
 	/**
 	 * Filter for core fields setup
@@ -125,7 +125,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_CARDS = 'ltw_order_to_board_sync_fields_cards';
+	const FILTER_FIELDS_CARDS = 'lessthanweb_order_to_board_sync_fields_cards';
 
 	/**
 	 * Filter for settings fields setup
@@ -134,7 +134,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_SETTINGS = 'ltw_order_to_board_sync_fields_settings';
+	const FILTER_FIELDS_SETTINGS = 'lessthanweb_order_to_board_sync_fields_settings';
 
 	/**
 	 * Filter for status fields setup
@@ -143,7 +143,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_STATUS = 'ltw_order_to_board_sync_fields_status';
+	const FILTER_FIELDS_STATUS = 'lessthanweb_order_to_board_sync_fields_status';
 	
 	/**
 	 * Filter for card fields rows. This is required filter to be set when using FILTER_FIELDS_CARDS else the fields will not be shown.
@@ -152,7 +152,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_CARDS_ROWS = 'ltw_order_to_board_sync_fields_cards_rows';
+	const FILTER_FIELDS_CARDS_ROWS = 'lessthanweb_order_to_board_sync_fields_cards_rows';
 
 	/**
 	 * Filter the rendered HTML for each repeatable settings row.
@@ -162,7 +162,7 @@ class Hooks {
 	 * @return	string	Filtered row HTML.
 	 * @since	1.0.0
 	 */
-	const FILTER_REPEATABLE_ROW_HTML = 'ltw_order_to_board_sync_repeatable_row_html';
+	const FILTER_REPEATABLE_ROW_HTML = 'lessthanweb_order_to_board_sync_repeatable_row_html';
 
 	/**
 	 * Filter the rendered HTML for a configured settings field.
@@ -176,7 +176,7 @@ class Hooks {
 	 * @return	string	Filtered field HTML.
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELD_HTML = 'ltw_order_to_board_sync_field_html';
+	const FILTER_FIELD_HTML = 'lessthanweb_order_to_board_sync_field_html';
 
 	/**
 	 * Filter for card fields rows. This is required filter to be set when using FILTER_FIELDS_SETTINGS else the fields will not be shown.
@@ -185,7 +185,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_SETTINGS_ROWS = 'ltw_order_to_board_sync_fields_settings_rows';
+	const FILTER_FIELDS_SETTINGS_ROWS = 'lessthanweb_order_to_board_sync_fields_settings_rows';
 
 	/**
 	 * Filter for card fields rows. This is required filter to be set when using FILTER_FIELDS_STATUS else the fields will not be shown.
@@ -194,7 +194,7 @@ class Hooks {
 	 * @return	array	Filtered fields array
 	 * @since	1.0.0
 	 */
-	const FILTER_FIELDS_STATUS_ROWS = 'ltw_order_to_board_sync_fields_status_rows';
+	const FILTER_FIELDS_STATUS_ROWS = 'lessthanweb_order_to_board_sync_fields_status_rows';
 	
 	/**
 	 * Filter Trello API GET args
@@ -204,7 +204,7 @@ class Hooks {
 	 * @return	array	Filtered get arguments
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_GET_ARGS = 'ltw_order_to_board_sync_api_get_args';
+	const FILTER_TRELLO_API_GET_ARGS = 'lessthanweb_order_to_board_sync_api_get_args';
 
 	/**
 	 * Filter Trello API POST args
@@ -214,7 +214,7 @@ class Hooks {
 	 * @return	array	Filtered post arguments
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_POST_ARGS = 'ltw_order_to_board_sync_api_post_args';
+	const FILTER_TRELLO_API_POST_ARGS = 'lessthanweb_order_to_board_sync_api_post_args';
 
 	/**
 	 * Filter Trello API request args
@@ -224,7 +224,7 @@ class Hooks {
 	 * @return	array	Filtered request arguments
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_REQUEST_ARGS = 'ltw_order_to_board_sync_api_request_args';
+	const FILTER_TRELLO_API_REQUEST_ARGS = 'lessthanweb_order_to_board_sync_api_request_args';
 
 	/**
 	 * Filter the current OAuth access-token value for first-party extensions.
@@ -233,7 +233,7 @@ class Hooks {
 	 * @return	string|\WP_Error
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_OAUTH_ACCESS_TOKEN = 'ltw_order_to_board_sync_oauth_access_token';
+	const FILTER_TRELLO_OAUTH_ACCESS_TOKEN = 'lessthanweb_order_to_board_sync_oauth_access_token';
 
 	/**
 	 * Filter the card payload immediately before it is sent to Trello.
@@ -244,7 +244,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_CARD_DATA = 'ltw_order_to_board_sync_card_data';
+	const FILTER_TRELLO_CARD_DATA = 'lessthanweb_order_to_board_sync_card_data';
 
 	/**
 	 * Filter Board/List destinations after core field validation so extensions can retain destination-specific settings.
@@ -256,7 +256,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_BOARD_LIST_DESTINATIONS = 'ltw_order_to_board_sync_board_list_destinations';
+	const FILTER_BOARD_LIST_DESTINATIONS = 'lessthanweb_order_to_board_sync_board_list_destinations';
 
 	/**
 	 * Filter the destinations used to create cards for an order.
@@ -267,7 +267,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.0.0
 	 */
-	const FILTER_CARD_DESTINATIONS = 'ltw_order_to_board_sync_card_destinations';
+	const FILTER_CARD_DESTINATIONS = 'lessthanweb_order_to_board_sync_card_destinations';
 
 	/**
 	 * Filter the rendered note for an order's Trello card-history entry.
@@ -277,7 +277,7 @@ class Hooks {
 	 * @return	string
 	 * @since	1.0.0
 	 */
-	const FILTER_CARD_HISTORY_NOTE = 'ltw_order_to_board_sync_card_history_note';
+	const FILTER_CARD_HISTORY_NOTE = 'lessthanweb_order_to_board_sync_card_history_note';
 
 	/**
 	 * Filter the ordered, named description sections before they are combined.
@@ -292,7 +292,7 @@ class Hooks {
 	 * @return	array
 	 * @since	1.2.0
 	 */
-	const FILTER_TRELLO_CARD_DESCRIPTION_SECTIONS = 'ltw_order_to_board_sync_card_description_sections';
+	const FILTER_TRELLO_CARD_DESCRIPTION_SECTIONS = 'lessthanweb_order_to_board_sync_card_description_sections';
 	
 	/**
 	 * Filter Trello API GET response
@@ -302,7 +302,7 @@ class Hooks {
 	 * @return	array	Filtered response
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_GET_RESPONSE = 'ltw_order_to_board_sync_api_get_response';
+	const FILTER_TRELLO_API_GET_RESPONSE = 'lessthanweb_order_to_board_sync_api_get_response';
 
 	/**
 	 * Filter Trello API POST response
@@ -312,7 +312,7 @@ class Hooks {
 	 * @return	array	Filtered response
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_POST_RESPONSE = 'ltw_order_to_board_sync_api_post_response';
+	const FILTER_TRELLO_API_POST_RESPONSE = 'lessthanweb_order_to_board_sync_api_post_response';
 
 	/**
 	 * Filter Trello API REQUEST response
@@ -322,7 +322,7 @@ class Hooks {
 	 * @return	array	Filtered response
 	 * @since	1.0.0
 	 */
-	const FILTER_TRELLO_API_REQUEST_RESPONSE = 'ltw_order_to_board_sync_api_request_response';
+	const FILTER_TRELLO_API_REQUEST_RESPONSE = 'lessthanweb_order_to_board_sync_api_request_response';
 	
 	/**
 	 * Filter plugin settings before saving
@@ -331,7 +331,7 @@ class Hooks {
 	 * @return	array	Filtered settings
 	 * @since	1.0.0
 	 */
-	const FILTER_SETTINGS_BEFORE_SAVE = 'ltw_order_to_board_sync_settings_before_save';
+	const FILTER_SETTINGS_BEFORE_SAVE = 'lessthanweb_order_to_board_sync_settings_before_save';
 	
 	/**
 	 * Filter plugin settings after retrieval
@@ -340,7 +340,7 @@ class Hooks {
 	 * @return	array	Filtered settings
 	 * @since	1.0.0
 	 */
-	const FILTER_SETTINGS_AFTER_LOAD = 'ltw_order_to_board_sync_settings_after_load';
+	const FILTER_SETTINGS_AFTER_LOAD = 'lessthanweb_order_to_board_sync_settings_after_load';
 
 	/**
 	 * Filter tabs configuration for settings
@@ -349,7 +349,7 @@ class Hooks {
 	 * @return	array	Filtered settings
 	 * @since	1.0.0
 	 */
-	const FILTER_SETTINGS_TABS = 'ltw_order_to_board_sync_settings_tabs';
+	const FILTER_SETTINGS_TABS = 'lessthanweb_order_to_board_sync_settings_tabs';
 
 	/**
 	 * Filter tabs configuration for settings
@@ -358,7 +358,7 @@ class Hooks {
 	 * @return	array	Filtered settings
 	 * @since	1.0.0
 	 */
-	const FILTER_STATUS_TABS = 'ltw_order_to_board_sync_status_tabs';
+	const FILTER_STATUS_TABS = 'lessthanweb_order_to_board_sync_status_tabs';
 
 	/**
 	 * Filter tabs configuration for Help.
@@ -367,7 +367,7 @@ class Hooks {
 	 * @return	array	Filtered Help tabs
 	 * @since	1.0.0
 	 */
-	const FILTER_HELP_TABS = 'ltw_order_to_board_sync_help_tabs';
+	const FILTER_HELP_TABS = 'lessthanweb_order_to_board_sync_help_tabs';
 
 	/**
 	 * Filter the content rendered for a Help tab.
@@ -377,7 +377,7 @@ class Hooks {
 	 * @return	string	Filtered Help tab content.
 	 * @since	1.0.0
 	 */
-	const FILTER_HELP_TAB_CONTENT = 'ltw_order_to_board_sync_help_tab_content';
+	const FILTER_HELP_TAB_CONTENT = 'lessthanweb_order_to_board_sync_help_tab_content';
 
 	/**
 	 * Filter the order statuses available in the Cards settings.
@@ -389,7 +389,7 @@ class Hooks {
 	 * @return	array	Filtered order statuses.
 	 * @since	1.0.0
 	 */
-	const FILTER_ORDER_STATUSES = 'ltw_order_to_board_sync_order_statuses';
+	const FILTER_ORDER_STATUSES = 'lessthanweb_order_to_board_sync_order_statuses';
 
 	/**
 	 * Filter Cards tab information text.
@@ -398,11 +398,18 @@ class Hooks {
 	 * @return	string	Filtered Cards tab information text.
 	 * @since	1.0.0
 	 */
-	const FILTER_CARDS_INFO_TEXT = 'ltw_order_to_board_sync_cards_info_text';
+	const FILTER_CARDS_INFO_TEXT = 'lessthanweb_order_to_board_sync_cards_info_text';
 	
 	/**
 	 * Actions
 	 */
+
+	/**
+	 * Admin-post action identifier for settings form submissions.
+	 *
+	 * @since	1.0.0
+	 */
+	const ACTION_SAVE_SETTINGS = 'lessthanweb_order_to_board_sync_save_settings';
 
 	/**
 	 * Action fired on single order edit right before the fields
@@ -412,7 +419,7 @@ class Hooks {
 	 * @param	array	$card_settings	Card settings
 	 * @since	1.0.0
 	 */
-	const ACTION_EDIT_ORDER_METABOX_BEFORE_FIELDS = 'ltw_order_to_board_sync_edit_order_metabox_before_fields';
+	const ACTION_EDIT_ORDER_METABOX_BEFORE_FIELDS = 'lessthanweb_order_to_board_sync_edit_order_metabox_before_fields';
 
 	/**
 	 * Action fired on single order edit right after the fields and before the button
@@ -422,7 +429,7 @@ class Hooks {
 	 * @param	array	$card_settings	Card settings
 	 * @since	1.0.0
 	 */
-	const ACTION_EDIT_ORDER_METABOX_AFTER_FIELDS = 'ltw_order_to_board_sync_edit_order_metabox_after_fields';
+	const ACTION_EDIT_ORDER_METABOX_AFTER_FIELDS = 'lessthanweb_order_to_board_sync_edit_order_metabox_after_fields';
 	
 	/**
 	 * Action fired when a new order is created and before sending to Trello
@@ -431,7 +438,7 @@ class Hooks {
 	 * @param	array	$card_data		The prepared card data
 	 * @since	1.0.0
 	 */
-	const ACTION_ORDER_NEW_BEFORE_SEND = 'ltw_order_to_board_sync_order_new_before_send';
+	const ACTION_ORDER_NEW_BEFORE_SEND = 'lessthanweb_order_to_board_sync_order_new_before_send';
 
 	/**
 	 * Action fired after a newly created Trello card has been saved to order history.
@@ -443,7 +450,7 @@ class Hooks {
 	 * @param	array	$trello_response	Trello card creation response.
 	 * @since	1.0.0
 	 */
-	const ACTION_CARD_CREATED = 'ltw_order_to_board_sync_card_created';
+	const ACTION_CARD_CREATED = 'lessthanweb_order_to_board_sync_card_created';
 	
 	/**
 	 * Action fired after a new order has been sent to Trello
@@ -452,7 +459,7 @@ class Hooks {
 	 * @param	array	$trello_response API response from Trello
 	 * @since	1.0.0
 	 */
-	const ACTION_ORDER_NEW_AFTER_SEND = 'ltw_order_to_board_sync_order_new_after_send';
+	const ACTION_ORDER_NEW_AFTER_SEND = 'lessthanweb_order_to_board_sync_order_new_after_send';
 	
 	/**
 	 * Action fired when order status changes and before sending to Trello
@@ -463,7 +470,7 @@ class Hooks {
 	 * @param	object	$order			WC_Order object
 	 * @since	1.0.0
 	 */
-	const ACTION_ORDER_STATUS_CHANGED_BEFORE_SEND = 'ltw_order_to_board_sync_order_status_changed_before_send';
+	const ACTION_ORDER_STATUS_CHANGED_BEFORE_SEND = 'lessthanweb_order_to_board_sync_order_status_changed_before_send';
 	
 	/**
 	 * Action fired after order status change has been sent to Trello
@@ -474,7 +481,7 @@ class Hooks {
 	 * @param	object	$order			WC_Order object
 	 * @since	1.0.0
 	 */
-	const ACTION_ORDER_STATUS_CHANGED_AFTER_SEND = 'ltw_order_to_board_sync_order_status_changed_after_send';
+	const ACTION_ORDER_STATUS_CHANGED_AFTER_SEND = 'lessthanweb_order_to_board_sync_order_status_changed_after_send';
 
 	/**
 	 * Action fired for every valid WooCommerce order status transition.
@@ -485,7 +492,7 @@ class Hooks {
 	 * @param	object	$order			WC_Order object.
 	 * @since	1.0.0
 	 */
-	const ACTION_ORDER_STATUS_CHANGED = 'ltw_order_to_board_sync_order_status_changed';
+	const ACTION_ORDER_STATUS_CHANGED = 'lessthanweb_order_to_board_sync_order_status_changed';
 
 	/**
 	 * Action fired when plugin settings are updated
@@ -494,7 +501,7 @@ class Hooks {
 	 * @param	array	$new_settings	New settings
 	 * @since	1.0.0
 	 */
-	const ACTION_SETTINGS_UPDATED = 'ltw_order_to_board_sync_settings_updated';
+	const ACTION_SETTINGS_UPDATED = 'lessthanweb_order_to_board_sync_settings_updated';
 	
 	/**
 	 * Action fired when an error occurs in the plugin
@@ -504,5 +511,5 @@ class Hooks {
 	 * @param	mixed	$error_data		Additional error data
 	 * @since	1.0.0
 	 */
-	const ACTION_ERROR_OCCURRED = 'ltw_order_to_board_sync_error_occurred';
+	const ACTION_ERROR_OCCURRED = 'lessthanweb_order_to_board_sync_error_occurred';
 }

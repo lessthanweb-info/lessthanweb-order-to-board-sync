@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\WC;
+namespace lessthanweb\Order_To_Board_Sync\WC;
 
 /**
  * 	WooCommerce compatibility declarations
  *
  * 	@author		lessthanweb
- * 	@package 	LTW_Order_To_Board_Sync
+ * 	@package 	lessthanweb_Order_To_Board_Sync
  * 	@since		1.0.0
  *
  */
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
 
 /**
  * WC Class
@@ -60,6 +60,7 @@ class Order_Status {
     public function get_list_of_order_statuses(): array {
 		$order_statuses = array_intersect_key( wc_get_order_statuses(), self::DEFAULT_ORDER_STATUS_KEYS );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( HOOKS::FILTER_ORDER_STATUSES, $order_statuses );
     }
 }

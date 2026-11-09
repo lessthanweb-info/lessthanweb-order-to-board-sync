@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Admin;
+namespace lessthanweb\Order_To_Board_Sync\Admin;
 
 /**
  * Handles admin notices
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
 
 /**
  * Notices Class
@@ -27,7 +27,7 @@ class Notices {
 	 * @since	1.0.0
 	 *
 	 */
-	private string $transient_key = 'ltw_order_to_board_sync_admin_notices';
+	private string $transient_key = 'lessthanweb_order_to_board_sync_admin_notices';
 
 	/**
 	 * Notice types
@@ -78,7 +78,7 @@ class Notices {
 			'dismissible' => $dismissible,
 		];
 
-		set_transient( $this->transient_key, $notices, LTW_ORDER_TO_BOARD_SYNC_HOUR_IN_SECONDS );
+		set_transient( $this->transient_key, $notices, LESSTHANWEB_ORDER_TO_BOARD_SYNC_HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -178,7 +178,7 @@ class Notices {
 				 * @param	string $message The notice message
 				 * @since	1.0.0
 				 */
-				echo wp_kses_post( apply_filters( Hooks::FILTER_ADMIN_NOTICE_MESSAGE, $message ) );
+				echo wp_kses_post( apply_filters( Hooks::FILTER_ADMIN_NOTICE_MESSAGE, $message ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 				?>
 			</p>
 		</div>

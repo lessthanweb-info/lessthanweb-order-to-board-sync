@@ -15,7 +15,7 @@ spl_autoload_register(
 	 */
 	static function ( string $class_name ): void {
 		// Limit this autoloader to classes belonging to the plugin namespace.
-		$prefix = 'LTW\\Order_To_Board_Sync\\';
+		$prefix = 'lessthanweb\\Order_To_Board_Sync\\';
 		$namespace_position = strpos( $class_name, $prefix );
 
 		if ( $namespace_position !== 0 ) {

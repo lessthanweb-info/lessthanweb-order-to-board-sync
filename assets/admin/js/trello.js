@@ -1,7 +1,7 @@
 jQuery( document ).ready( function( $ ) {
-    let ltw_order_to_board_sync_loading = false;
+    let lessthanweb_order_to_board_sync_loading = false;
 
-    const ltw_wc_loading = function( loading, container ) {
+    const lessthanweb_wc_loading = function( loading, container ) {
         let loader = $( container ).find( '.loader' );
 
         if ( loading ) {
@@ -11,9 +11,18 @@ jQuery( document ).ready( function( $ ) {
         }
     }
 
+    const lessthanweb_order_to_board_sync_show_notice = function( container, type, message ) {
+        // Treat server-provided messages as text rather than HTML.
+        const notice = $( '<div>' )
+            .addClass( 'notice notice-' + type + ' inline' )
+            .text( message === undefined || message === null ? '' : String( message ) );
+
+        $( container ).empty().append( notice );
+    };
+
     //  Call Trello API and get a list of boards.
-    const ltw_order_to_board_sync_get_boards = function() {
-        let select = $( '.ltw-order-to-board-sync' ).find( '.ltw-order-to-board-sync-boards' );
+    const lessthanweb_order_to_board_sync_get_boards = function() {
+        let select = $( '.lessthanweb-order-to-board-sync' ).find( '.lessthanweb-order-to-board-sync-boards' );
 
         // Skip the API request on screens where card destination controls are not rendered.
         if ( select.length === 0 ) {
@@ -22,14 +31,14 @@ jQuery( document ).ready( function( $ ) {
         
         $.ajax( {
             type: 'post',
-            url: ltw_order_to_board_sync.ajax_url,
+            url: lessthanweb_order_to_board_sync.ajax_url,
             data: {
-                'action': 'ltw_trello_get_boards',
-                'nonce': ltw_order_to_board_sync.nonce,
+                'action': 'lessthanweb_trello_get_boards',
+                'nonce': lessthanweb_order_to_board_sync.nonce,
             },
             dataType: 'json',
             beforeSend: function() {
-                ltw_wc_loading( true, select.parent() );
+                lessthanweb_wc_loading( true, select.parent() );
             },
             success: function( response ) {
                 if ( response.success ) {
@@ -67,60 +76,60 @@ jQuery( document ).ready( function( $ ) {
 
                     //  If we have found some available boards, let try to get the lists as well
                     if ( board_ids.length > 0 ) {
-                        ltw_order_to_board_sync_get_all_lists_batch( board_ids, selected_boards );
+                        lessthanweb_order_to_board_sync_get_all_lists_batch( board_ids, selected_boards );
                     }
                     
-                    ltw_wc_loading( false, select.parent() );
+                    lessthanweb_wc_loading( false, select.parent() );
                 } else {
-                    console.error( ltw_order_to_board_sync.texts.error, response.data.message );
+                    console.error( lessthanweb_order_to_board_sync.texts.error, response.data.message );
                 }
             },
             error: function() {
-                ltw_wc_loading( false, select.parent() );
+                lessthanweb_wc_loading( false, select.parent() );
             }
         } );
     }
 
-    ltw_order_to_board_sync_get_boards();
+    lessthanweb_order_to_board_sync_get_boards();
 
-    const ltw_order_to_board_sync_get_all_lists_batch = function( board_ids, selected_boards ) {
-        let board_select = $( '.ltw-order-to-board-sync' ).find( '.ltw-order-to-board-sync-boards' );
-        let list_select = $( '.ltw-order-to-board-sync' ).find( '.ltw-order-to-board-sync-lists' );
+    const lessthanweb_order_to_board_sync_get_all_lists_batch = function( board_ids, selected_boards ) {
+        let board_select = $( '.lessthanweb-order-to-board-sync' ).find( '.lessthanweb-order-to-board-sync-boards' );
+        let list_select = $( '.lessthanweb-order-to-board-sync' ).find( '.lessthanweb-order-to-board-sync-lists' );
 
         $.ajax( {
             type: 'post',
-            url: ltw_order_to_board_sync.ajax_url,
+            url: lessthanweb_order_to_board_sync.ajax_url,
             data: {
-                'action': 'ltw_trello_get_lists_batch',
-                'nonce': ltw_order_to_board_sync.nonce,
+                'action': 'lessthanweb_trello_get_lists_batch',
+                'nonce': lessthanweb_order_to_board_sync.nonce,
                 'board_ids': board_ids
             },
             dataType: 'json',
             success: function( response ) {
                 if ( response.success ) {
                     //  Store lists globally or in a data attribute for later use
-                    window.ltw_order_to_board_sync_lists = response.data.lists;
+                    window.lessthanweb_order_to_board_sync_lists = response.data.lists;
 
                     //  Populate each board/list pair with the correct saved board and list ID
                     board_select.each( function( i, board_field ) {
-                        let parent = $( board_field ).closest( '.ltw-order-to-board-sync-board-list-row' );
+                        let parent = $( board_field ).closest( '.lessthanweb-order-to-board-sync-board-list-row' );
 
                         if ( parent.length === 0 ) {
                             parent = $( board_field ).closest( '.tab-content' );
                         }
 
                         if ( parent.length === 0 ) {
-                            parent = $( board_field ).closest( '.ltw-order-to-board-sync-edit-order' );
+                            parent = $( board_field ).closest( '.lessthanweb-order-to-board-sync-edit-order' );
                         }
 
-                        let list_field = parent.find( '.ltw-order-to-board-sync-lists' );
+                        let list_field = parent.find( '.lessthanweb-order-to-board-sync-lists' );
                         let selected_board_id = selected_boards[ i ] || $( board_field ).val();
 
                         if ( ! selected_board_id ) {
                             return;
                         }
 
-                        ltw_order_to_board_sync_populate_lists_for_board( selected_board_id, $( list_field ).data( 'selected' ), list_field );
+                        lessthanweb_order_to_board_sync_populate_lists_for_board( selected_board_id, $( list_field ).data( 'selected' ), list_field );
                     } );
 
                     //  Add change handler to update lists when board selection changes
@@ -128,37 +137,37 @@ jQuery( document ).ready( function( $ ) {
                         let selected_board_id = $( this ).val();
 
                         //  Find the corresponding lists select in the same parent
-                        let parent = $( this ).closest( '.ltw-order-to-board-sync-board-list-row' );
+                        let parent = $( this ).closest( '.lessthanweb-order-to-board-sync-board-list-row' );
                         if ( parent.length === 0 ) {
-                            parent = $( this ).closest( '.tab-content.active, .ltw-order-to-board-sync-edit-order' );
+                            parent = $( this ).closest( '.tab-content.active, .lessthanweb-order-to-board-sync-edit-order' );
                         }
-                        let corresponding_list_select = parent.find( '.ltw-order-to-board-sync-lists' ).first();
+                        let corresponding_list_select = parent.find( '.lessthanweb-order-to-board-sync-lists' ).first();
 
-                        ltw_order_to_board_sync_populate_lists_for_board( selected_board_id, null, corresponding_list_select );
+                        lessthanweb_order_to_board_sync_populate_lists_for_board( selected_board_id, null, corresponding_list_select );
                     } );
 
                     //  Trigger custom event
-                    $( document ).trigger( 'ltw_trello_lists_loaded', [ response.data ] );
+                    $( document ).trigger( 'lessthanweb_trello_lists_loaded', [ response.data ] );
 
-                    ltw_wc_loading( false, list_select.parent() );
+                    lessthanweb_wc_loading( false, list_select.parent() );
                 } else {
-                    console.error( ltw_order_to_board_sync.texts.error, response.data.message );
+                    console.error( lessthanweb_order_to_board_sync.texts.error, response.data.message );
                 }
             },
             error: function() {
-                ltw_wc_loading( false, list_select.parent() );
+                lessthanweb_wc_loading( false, list_select.parent() );
             }
         } );
     };
 
     //  Helper function to populate lists select for a specific board
-    const ltw_order_to_board_sync_populate_lists_for_board = function( board_id, selected_list_id, list_field ) {
+    const lessthanweb_order_to_board_sync_populate_lists_for_board = function( board_id, selected_list_id, list_field ) {
         //  Clear existing lists
         $( list_field ).empty();
 
         //  Get lists for the selected board
-        if ( window.ltw_order_to_board_sync_lists && window.ltw_order_to_board_sync_lists[ board_id ] ) {
-            let lists = window.ltw_order_to_board_sync_lists[ board_id ];
+        if ( window.lessthanweb_order_to_board_sync_lists && window.lessthanweb_order_to_board_sync_lists[ board_id ] ) {
+            let lists = window.lessthanweb_order_to_board_sync_lists[ board_id ];
 
             $.each( lists, function( i, list ) {
                 let is_selected = list.id == selected_list_id ? true : false;
@@ -170,34 +179,34 @@ jQuery( document ).ready( function( $ ) {
                 } ) );
             } );
         } else {
-            console.log( ltw_order_to_board_sync.texts.no_lists_found_for_board, board_id );
+            console.log( lessthanweb_order_to_board_sync.texts.no_lists_found_for_board, board_id );
         }
     };
 
     // Create card button handler
-    $( document ).on( 'click', '#ltw-order-to-board-sync-create-card, #ltw-order-to-board-sync-retry-card', function( e ) {
+    $( document ).on( 'click', '#lessthanweb-order-to-board-sync-create-card, #lessthanweb-order-to-board-sync-retry-card', function( e ) {
         e.preventDefault();
 
         let btn = $( this );
-        let container = btn.closest( '.ltw-order-to-board-sync-order-metabox' );
-        let board = container.find( '.ltw-order-to-board-sync-boards' ).val() || '';
-        let list = container.find( '.ltw-order-to-board-sync-lists' ).val() || '';
+        let container = btn.closest( '.lessthanweb-order-to-board-sync-order-metabox' );
+        let board = container.find( '.lessthanweb-order-to-board-sync-boards' ).val() || '';
+        let list = container.find( '.lessthanweb-order-to-board-sync-lists' ).val() || '';
         let order_id = btn.data( 'order-id' ) || container.data( 'order-id' );
-        let result_container = container.find( '.ltw-order-to-board-sync-result' );
-        let history_container = container.children( '.ltw-order-to-board-sync-card-history-container' );
-        let retry = btn.attr( 'id' ) === 'ltw-order-to-board-sync-retry-card' ? 1 : 0;
+        let result_container = container.find( '.lessthanweb-order-to-board-sync-result' );
+        let history_container = container.children( '.lessthanweb-order-to-board-sync-card-history-container' );
+        let retry = btn.attr( 'id' ) === 'lessthanweb-order-to-board-sync-retry-card' ? 1 : 0;
 
         // Clear previous result
         result_container.empty();
 
         if ( ! order_id ) {
-            result_container.html( '<div class="notice notice-error inline">' + ( ltw_order_to_board_sync.texts.error || 'Error:' ) + ' Missing order ID</div>' );
+            lessthanweb_order_to_board_sync_show_notice( result_container, 'error', ( lessthanweb_order_to_board_sync.texts.error || 'Error:' ) + ' Missing order ID' );
 
             return;
         }
 
         if ( ! board || ! list ) {
-            result_container.html( '<div class="notice notice-error inline">' + ( ltw_order_to_board_sync.texts.error || 'Error:' ) + ' Please select a board and a list.</div>' );
+            lessthanweb_order_to_board_sync_show_notice( result_container, 'error', ( lessthanweb_order_to_board_sync.texts.error || 'Error:' ) + ' Please select a board and a list.' );
             
 			return;
         }
@@ -206,14 +215,14 @@ jQuery( document ).ready( function( $ ) {
         btn.prop( 'disabled', true );
         container.find( 'select' ).prop( 'disabled', true );
         container.find( 'input[type="text"]' ).prop( 'disabled', true );
-        ltw_wc_loading( true, '.ltw-order-to-board-sync-actions' );
+        lessthanweb_wc_loading( true, '.lessthanweb-order-to-board-sync-actions' );
 
         $.ajax( {
             type: 'post',
-            url: ltw_order_to_board_sync.ajax_url,
+            url: lessthanweb_order_to_board_sync.ajax_url,
             data: {
-                action: 'ltw_trello_create_card_from_order',
-                nonce: ltw_order_to_board_sync.nonce,
+                action: 'lessthanweb_trello_create_card_from_order',
+                nonce: lessthanweb_order_to_board_sync.nonce,
                 order_id: order_id,
                 board_id: board,
                 list_id: list,
@@ -225,28 +234,29 @@ jQuery( document ).ready( function( $ ) {
                     //  Update the history list
 					let history_list = response.data && response.data.html ? response.data.html : '';
                     
+                    // This server-generated fragment is sanitized with wp_kses_post before it is returned.
                     history_container.html( history_list );
 
-                    $( '#ltw-order-to-board-sync-create-card' ).show();
+                    $( '#lessthanweb-order-to-board-sync-create-card' ).show();
 
-                    $( '#ltw-order-to-board-sync-retry-card' ).hide();
+                    $( '#lessthanweb-order-to-board-sync-retry-card' ).hide();
 
                     //  Show a success message
                     let msg = response.data && response.data.message ? response.data.message : 'Card created successfully.';
                     
-                    result_container.html( '<div class="notice notice-success inline">' + msg + '</div>' );
+                    lessthanweb_order_to_board_sync_show_notice( result_container, 'success', msg );
                 } else {
-                    let msg = response.data && response.data.message ? response.data.message : ( ltw_order_to_board_sync.texts.error || 'Error:' );
+                    let msg = response.data && response.data.message ? response.data.message : ( lessthanweb_order_to_board_sync.texts.error || 'Error:' );
                     
-                    result_container.html( '<div class="notice notice-error inline">' + msg + '</div>' );
+                    lessthanweb_order_to_board_sync_show_notice( result_container, 'error', msg );
                 }
             },
             error: function( xhr, status, err ) {
-                result_container.html( '<div class="notice notice-error inline">' + ( ltw_order_to_board_sync.texts.error || 'Error:' ) + ' ' + err + '</div>' );
+                lessthanweb_order_to_board_sync_show_notice( result_container, 'error', ( lessthanweb_order_to_board_sync.texts.error || 'Error:' ) + ' ' + err );
             },
             complete: function() {
                 // Enable UI and hide loader
-                ltw_wc_loading( false, container );
+                lessthanweb_wc_loading( false, container );
                 btn.prop( 'disabled', false );
                 container.find( 'select' ).prop( 'disabled', false );
                 container.find( 'input[type="text"]' ).prop( 'disabled', false );

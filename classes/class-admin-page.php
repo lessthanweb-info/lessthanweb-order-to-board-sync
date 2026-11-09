@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Admin;
+namespace lessthanweb\Order_To_Board_Sync\Admin;
 
 /**
  * Contains code for admin stuff.
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -15,15 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Blocks\BlockTypes\OrderConfirmation\Status as OrderConfirmationStatus;
-use LTW\Order_To_Board_Sync\Core\Settings;
-use LTW\Order_To_Board_Sync\Core\Fields;
-use LTW\Order_To_Board_Sync\Core\Logger;
-use LTW\Order_To_Board_Sync\Core\Hooks;
-use LTW\Order_To_Board_Sync\Core\Trello_OAuth;
-use LTW\Order_To_Board_Sync\WC\Order_Status;
-use LTW\Order_To_Board_Sync\Admin\UI\Components;
-use LTW\Order_To_Board_Sync\Admin\Help;
-use LTW\Order_To_Board_Sync\Status\System_Info;
+use lessthanweb\Order_To_Board_Sync\Core\Settings;
+use lessthanweb\Order_To_Board_Sync\Core\Fields;
+use lessthanweb\Order_To_Board_Sync\Core\Logger;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\Core\Trello_OAuth;
+use lessthanweb\Order_To_Board_Sync\WC\Order_Status;
+use lessthanweb\Order_To_Board_Sync\Admin\UI\Components;
+use lessthanweb\Order_To_Board_Sync\Admin\Help;
+use lessthanweb\Order_To_Board_Sync\Status\System_Info;
 
 /**
  * Page Class
@@ -65,20 +65,22 @@ class Page {
 		private Help $help,
 		private Trello_OAuth $trello_oauth
 	) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		$this->settings_tabs_config = apply_filters( Hooks::FILTER_SETTINGS_TABS, [
-			'trello_api' => __( 'Trello OAuth 2.0', 'ltw-order-to-board-sync' ),
+			'trello_api' => __( 'Trello OAuth 2.0', 'lessthanweb-order-to-board-sync' ),
 		] );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		$this->status_tabs_config = apply_filters( Hooks::FILTER_STATUS_TABS, [
-			'system_info' => __( 'System Info', 'ltw-order-to-board-sync' ),
-			'logs' => __( 'Logs', 'ltw-order-to-board-sync' ),
+			'system_info' => __( 'System Info', 'lessthanweb-order-to-board-sync' ),
+			'logs' => __( 'Logs', 'lessthanweb-order-to-board-sync' ),
 		] );
 
 		// Ajax for deleting a single log
-		add_action( 'wp_ajax_ltw_trello_delete_log', [ $this, 'delete_log' ] );
+		add_action( 'wp_ajax_lessthanweb_trello_delete_log', [ $this, 'delete_log' ] );
 
 		// Ajax for deleting all logs in one go
-		add_action( 'wp_ajax_ltw_trello_delete_all_logs', [ $this, 'delete_all_logs' ] );
+		add_action( 'wp_ajax_lessthanweb_trello_delete_all_logs', [ $this, 'delete_all_logs' ] );
     }
 
     /**
@@ -90,84 +92,141 @@ class Page {
 	 *
 	 */
     public function render(): void {
-        echo '<div class="wrap ltw-order-to-board-sync">';
+        echo '<div class="wrap lessthanweb-order-to-board-sync">';
 
 			echo '<h1>' . esc_html( get_admin_page_title() ) . '</h1>';
 
 			if ( ! $this->settings->is_setup_complete() ) {
-				echo $this->render_setup_message();
+				echo wp_kses( $this->render_setup_message(), $this->get_admin_allowed_html() );
 			}
 
-			echo $this->render_form();
+			echo wp_kses( $this->render_form(), $this->get_admin_allowed_html() );
 
-			echo '<div class="ltw-order-to-board-sync-top-tabs">
-				<div class="top-tab active" data-top-id="cards">' . __( 'Cards', 'ltw-order-to-board-sync' ) . '</div>
-				<div class="top-tab" data-top-id="settings">' . __( 'Settings', 'ltw-order-to-board-sync' ) . '</div>
-				<div class="top-tab" data-top-id="status">' . __( 'Status', 'ltw-order-to-board-sync' ) . '</div>
-				<div class="top-tab" data-top-id="help">' . __( 'Help', 'ltw-order-to-board-sync' ) . '</div>
+			echo '<div class="lessthanweb-order-to-board-sync-top-tabs">
+				<div class="top-tab active" data-top-id="cards">' . esc_html__( 'Cards', 'lessthanweb-order-to-board-sync' ) . '</div>
+				<div class="top-tab" data-top-id="settings">' . esc_html__( 'Settings', 'lessthanweb-order-to-board-sync' ) . '</div>
+				<div class="top-tab" data-top-id="status">' . esc_html__( 'Status', 'lessthanweb-order-to-board-sync' ) . '</div>
+				<div class="top-tab" data-top-id="help">' . esc_html__( 'Help', 'lessthanweb-order-to-board-sync' ) . '</div>
 			</div>';
 
-			echo '<div class="ltw-order-to-board-sync-main-content">';
+			echo '<div class="lessthanweb-order-to-board-sync-main-content">';
 
-				echo '<div class="ltw-order-to-board-sync-top-content ltw-order-to-board-sync-top-content-cards active">';
+				echo '<div class="lessthanweb-order-to-board-sync-top-content lessthanweb-order-to-board-sync-top-content-cards active">';
 
-					echo '<div class="ltw-order-to-board-sync-container">';
+					echo '<div class="lessthanweb-order-to-board-sync-container">';
 
 						// Render card tabs
-						echo $this->render_cards_tabs();
+						echo wp_kses( $this->render_cards_tabs(), $this->get_admin_allowed_html() );
 
 						// Render card tab content
-						echo $this->render_cards_tab_content();
+						echo wp_kses( $this->render_cards_tab_content(), $this->get_admin_allowed_html() );
 
-					echo '</div>';	// ltw-order-to-board-sync-container
+					echo '</div>';	// lessthanweb-order-to-board-sync-container
 
-				echo '</div>';	// ltw-order-to-board-sync-top-content
+				echo '</div>';	// lessthanweb-order-to-board-sync-top-content
 
-				echo '<div class="ltw-order-to-board-sync-top-content ltw-order-to-board-sync-top-content-settings">';
+				echo '<div class="lessthanweb-order-to-board-sync-top-content lessthanweb-order-to-board-sync-top-content-settings">';
 
-					echo '<div class="ltw-order-to-board-sync-container">';
+					echo '<div class="lessthanweb-order-to-board-sync-container">';
 
 						// Render settings tabs
-						echo $this->render_tabs( $this->settings_tabs_config );
+						echo wp_kses( $this->render_tabs( $this->settings_tabs_config ), $this->get_admin_allowed_html() );
 
-						echo $this->render_tab_content( $this->settings_tabs_config, 'settings' );
+						echo wp_kses( $this->render_tab_content( $this->settings_tabs_config, 'settings' ), $this->get_admin_allowed_html() );
 
-					echo '</div>';	// ltw-order-to-board-sync-container
+					echo '</div>';	// lessthanweb-order-to-board-sync-container
 
-				echo '</div>';	// ltw-order-to-board-sync-top-content
+				echo '</div>';	// lessthanweb-order-to-board-sync-top-content
 
-				echo '<div class="ltw-order-to-board-sync-top-content ltw-order-to-board-sync-top-content-status">';
+				echo '<div class="lessthanweb-order-to-board-sync-top-content lessthanweb-order-to-board-sync-top-content-status">';
 
-					echo '<div class="ltw-order-to-board-sync-container">';
+					echo '<div class="lessthanweb-order-to-board-sync-container">';
 
 						// Render status tabs
-						echo $this->render_tabs( $this->status_tabs_config );
+						echo wp_kses( $this->render_tabs( $this->status_tabs_config ), $this->get_admin_allowed_html() );
 
-						echo $this->render_tab_content( $this->status_tabs_config, 'status' );
+						echo wp_kses( $this->render_tab_content( $this->status_tabs_config, 'status' ), $this->get_admin_allowed_html() );
 
-					echo '</div>';	// ltw-order-to-board-sync-container
+					echo '</div>';	// lessthanweb-order-to-board-sync-container
 
-				echo '</div>';	// ltw-order-to-board-sync-top-content
+				echo '</div>';	// lessthanweb-order-to-board-sync-top-content
 
-				echo '<div class="ltw-order-to-board-sync-top-content ltw-order-to-board-sync-top-content-help">';
+				echo '<div class="lessthanweb-order-to-board-sync-top-content lessthanweb-order-to-board-sync-top-content-help">';
 
-					echo '<div class="ltw-order-to-board-sync-container">';
+					echo '<div class="lessthanweb-order-to-board-sync-container">';
 
 						// Render help tabs
-						echo $this->render_tabs( $this->help->get_tabs_config() );
+						echo wp_kses( $this->render_tabs( $this->help->get_tabs_config() ), $this->get_admin_allowed_html() );
 
-						echo $this->help->render_content();
+						echo wp_kses_post( $this->help->render_content() );
 
-					echo '</div>';	// ltw-order-to-board-sync-container
+					echo '</div>';	// lessthanweb-order-to-board-sync-container
 
-				echo '</div>';  // ltw-order-to-board-sync-top-content
+				echo '</div>';  // lessthanweb-order-to-board-sync-top-content
 
         	echo '</div>';	// main-content
 
-			echo $this->render_form( true );
+			echo wp_kses( $this->render_form( true ), $this->get_admin_allowed_html() );
 
         echo '</div>';	// wrap
     }
+
+	/**
+	 * Get the allowed HTML for generated admin markup.
+	 *
+	 * @return	array
+	 * @since	1.0.0
+	 *
+	 */
+	private function get_admin_allowed_html(): array {
+		$allowed_html = wp_kses_allowed_html( 'post' );
+
+		// Add the form and interface tags the generated admin HTML needs.
+		$admin_tags = [
+			'form' => [ 'action', 'id', 'method' ],
+			'input' => [
+				'type', 'name', 'value', 'id', 'class', 'checked', 'disabled', 'required', 'readonly',
+				'placeholder', 'min', 'max', 'step', 'autocomplete', 'role', 'aria-label', 'hidden',
+			],
+			'select' => [ 'id', 'name', 'class', 'data-selected', 'aria-label', 'multiple', 'required', 'disabled' ],
+			'option' => [ 'value', 'selected', 'disabled' ],
+			'textarea' => [ 'rows', 'id', 'name', 'class', 'aria-label', 'readonly', 'disabled', 'hidden' ],
+			'label' => [ 'for', 'class' ],
+			'fieldset' => [ 'role', 'class', 'data-context', 'id' ],
+			'legend' => [ 'class' ],
+			'details' => [ 'name', 'class' ],
+			'summary' => [ 'id', 'class' ],
+			'button' => [ 'type', 'id', 'class', 'name', 'value', 'data-log-id', 'aria-label', 'disabled' ],
+			'svg' => [
+				'xmlns', 'viewBox', 'fill', 'stroke', 'stroke-width', 'stroke-linecap',
+				'stroke-linejoin', 'width', 'height',
+			],
+			'line' => [ 'x1', 'y1', 'x2', 'y2' ],
+			'a' => [ 'href', 'target', 'rel', 'class', 'data-tab-id' ],
+			'div' => [ 'class', 'id', 'data-index' ],
+			'li' => [ 'class', 'data-color' ],
+			'span' => [ 'class', 'id', 'aria-busy', 'aria-live', 'aria-hidden', 'data-parent' ],
+			'aside' => [ 'class', 'id', 'aria-label', 'aria-labelledby' ],
+			'section' => [],
+			'figure' => [],
+			'table' => [],
+			'thead' => [],
+			'tbody' => [],
+			'tr' => [],
+			'th' => [ 'scope' ],
+			'td' => [],
+			'article' => [ 'id', 'class' ],
+			'header' => [ 'class' ],
+			'footer' => [ 'class' ],
+			'hr' => [ 'id', 'class' ],
+		];
+
+		foreach ( $admin_tags as $tag => $attributes ) {
+			$allowed_html[ $tag ] = array_fill_keys( $attributes, true );
+		}
+
+		return $allowed_html;
+	}
 
 	/**
 	 * Renders form.
@@ -183,12 +242,13 @@ class Page {
 		$form = '';
 
 		if ( ! $end ) {
-			$form .= '<form id="ltw-order-to-board-sync-form" method="post" action="admin-post.php">';
+			$form .= '<form id="lessthanweb-order-to-board-sync-form" method="post" action="admin-post.php">';
 			$form .= '<div>';
-			$form .= wp_nonce_field( 'ltw_order_to_board_sync_save_settings', 'ltw_order_to_board_sync_settings', true, false );
-			$form .= '<input type="hidden" name="action" value="save_settings">';
-			$form .= '<input type="hidden" id="ltw-order-to-board-sync-page-url" name="ltw_order_to_board_sync_url_page" value="' . admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME ) . '">';
-			$form .= '<input type="hidden" id="ltw-order-to-board-sync-current-page" name="ltw_order_to_board_sync_current_page" value="' . admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME ) . '">';
+			$form .= wp_nonce_field( 'lessthanweb_order_to_board_sync_save_settings', 'lessthanweb_order_to_board_sync_settings', true, false );
+			// Keep the submitted action identifier in sync with the registered admin-post hook.
+			$form .= '<input type="hidden" name="action" value="' . esc_attr( Hooks::ACTION_SAVE_SETTINGS ) . '">';
+			$form .= '<input type="hidden" id="lessthanweb-order-to-board-sync-page-url" name="lessthanweb_order_to_board_sync_url_page" value="' . esc_attr( admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME ) ) . '">';
+			$form .= '<input type="hidden" id="lessthanweb-order-to-board-sync-current-page" name="lessthanweb_order_to_board_sync_current_page" value="' . esc_attr( admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME ) ) . '">';
 			$form .= '</div>';
 		} else {
 			$form .= '</form>';	
@@ -212,27 +272,42 @@ class Page {
 		$order_statuses = $this->order_statuses->get_list_of_order_statuses();
 
 		// Now we shall build the side navigation based on the WC order statuses
-		$tabs = '<div class="ltw-order-to-board-sync-tabs">';
-			$tabs .= '<ul class="tabs-nav">';
+		$tabs = '<div class="lessthanweb-order-to-board-sync-sidebar">';
+			$tabs .= '<div class="lessthanweb-order-to-board-sync-tabs">';
+				$tabs .= '<ul class="tabs-nav">';
 
-			if ( ! empty( $order_statuses ) ) {
-				$count = 0;
+				if ( ! empty( $order_statuses ) ) {
+					$count = 0;
 
-				// Loop over WC order statuses
-				foreach ( $order_statuses as $os_key => $order_status ) {
-					// First one is always active
-					$is_active = $count === 0 ? 'active' : '';
+					// Loop over WC order statuses
+					foreach ( $order_statuses as $os_key => $order_status ) {
+						// First one is always active
+						$is_active = $count === 0 ? 'active' : '';
 
-					$tabs .= '<li><a href="#" class="tab-link ' . $is_active . '" data-tab-id="ltw-' . esc_attr( $os_key ) . '">' . esc_html( $order_status ) . '</a></li>';
+						$tabs .= '<li><a href="#" class="tab-link ' . $is_active . '" data-tab-id="lessthanweb-' . esc_attr( $os_key ) . '">' . esc_html( $order_status ) . '</a></li>';
 
-					$count++;
+						$count++;
+					}
+				} else {
+					$tabs .= '<li>' . esc_html__( 'No order statuses found.', 'lessthanweb-order-to-board-sync' ) . '</li>';
 				}
-			} else {
-				$tabs .= '<li>' . __( 'No order statuses found.', 'ltw-order-to-board-sync' ) . '</li>';
-			}
 
-			$tabs .= '</ul>';
-		$tabs .= '</div>';
+				$tabs .= '</ul>';
+
+				// Keep this Free-only note beside the order-status navigation it explains.
+				if ( ! defined( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PRO_VERSION' ) ) {
+					$pro_url = 'https://www.lessthanweb.com/product/order-to-board-sync-pro/';
+					$promo_link = '<a href="' . esc_url( $pro_url ) . '">' . esc_html__( 'Upgrade to PRO version', 'lessthanweb-order-to-board-sync' ) . '</a>';
+					$promo_text = sprintf( esc_html__( 'Not seeing all the order statuses? %s.', 'lessthanweb-order-to-board-sync' ), $promo_link );
+
+					$tabs .= '<aside class="lessthanweb-order-to-board-sync-tabs-promo"><p>' . wp_kses_post( $promo_text ) . '</p></aside>';
+				}
+			$tabs .= '</div>';
+
+			// Keep the support card below the order-status navigation.
+			$tabs .= $this->render_support_card();
+
+		$tabs .= '</div>'; // sidebar
 
 		return $tabs;
 	}
@@ -255,6 +330,7 @@ class Page {
 		$field_section = $overrides['section'] ?? '[' . $section_name . '][' . $context_key . ']';
 		$field_name = $field['name'] ?? '';
 		$field_value = $overrides['value'] ?? ( $field_name !== '' ? $this->settings->get( $section_name, $context_key, $field_name ) : '' );
+		
 		if ( ! empty( $field['sensitive'] ) ) {
 			$field_value = '';
 		}
@@ -262,7 +338,7 @@ class Page {
 		if ( $section_name === 'cards' && $field_name === 'enabled' ) {
 			$order_statuses = $this->order_statuses->get_list_of_order_statuses();
 			$status_label = $order_statuses[ $context_key ] ?? ucfirst( str_replace( [ 'wc-', '_' ], [ '', ' ' ], $context_key ) );
-			$field_label = sprintf( __( 'Create a Trello card for %s orders', 'ltw-order-to-board-sync' ), $status_label );
+			$field_label = sprintf( esc_html__( 'Create a Trello card for %s orders', 'lessthanweb-order-to-board-sync' ), $status_label );
 		}
 
 		if ( $field['type'] == 'btn_save' ) {
@@ -371,6 +447,7 @@ class Page {
 			$field_html = $this->system_info->render_full_page();
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( Hooks::FILTER_FIELD_HTML, $field_html, $field, $field_key, $section_name, $context_key, $field_value );
 	}
 
@@ -449,11 +526,12 @@ class Page {
 			];
 		}
 
-		$content = '<fieldset class="ltw-order-to-board-sync-board-lists" data-context="' . esc_attr( $context_key ) . '">';
-		$content .= '<legend><strong>' . esc_html__( 'Board and List destinations', 'ltw-order-to-board-sync' ) . '</strong></legend><div class="ltw-order-to-board-sync-board-list-rows">';
+		$content = '<fieldset class="lessthanweb-order-to-board-sync-board-lists" data-context="' . esc_attr( $context_key ) . '">';
+		$content .= '<legend><strong>' . esc_html__( 'Board and List destinations', 'lessthanweb-order-to-board-sync' ) . '</strong></legend><div class="lessthanweb-order-to-board-sync-board-list-rows">';
 
 		foreach ( array_values( $values ) as $index => $value ) {
 			$row_content = '';
+			
 			$row_groups = $row['groups'] ?? [
 				[
 					'fields' => $row['fields'] ?? [],
@@ -493,27 +571,27 @@ class Page {
 				$group_content = $this->ui_components->row( [ 'fields' => $row_fields ] );
 				$group_label = is_scalar( $group['label'] ?? '' ) ? sanitize_text_field( (string) ( $group['label'] ?? '' ) ) : '';
 				$group_description = is_scalar( $group['description'] ?? '' ) ? sanitize_text_field( (string) ( $group['description'] ?? '' ) ) : '';
-				$full_width_class = ! empty( $group['full_width'] ) ? ' ltw-order-to-board-sync-destination-group-full-width' : '';
+				$full_width_class = ! empty( $group['full_width'] ) ? ' lessthanweb-order-to-board-sync-destination-group-full-width' : '';
 
 				if ( $group_label !== '' ) {
-					$row_content .= '<fieldset class="ltw-order-to-board-sync-destination-group"><legend><strong>' . esc_html( $group_label ) . '</strong></legend>';
+					$row_content .= '<fieldset class="lessthanweb-order-to-board-sync-destination-group"><legend><strong>' . esc_html( $group_label ) . '</strong></legend>';
 
 					if ( $group_description !== '' ) {
-						$row_content .= '<p class="ltw-order-to-board-sync-destination-group-description">' . esc_html( $group_description ) . '</p>';
+						$row_content .= '<p class="lessthanweb-order-to-board-sync-destination-group-description">' . esc_html( $group_description ) . '</p>';
 					}
 
 					$row_content .= $group_content . '</fieldset>';
 				} elseif ( $full_width_class !== '' ) {
-					$row_content .= '<div class="ltw-order-to-board-sync-destination-group' . esc_attr( $full_width_class ) . '">' . $group_content . '</div>';
+					$row_content .= '<div class="lessthanweb-order-to-board-sync-destination-group' . esc_attr( $full_width_class ) . '">' . $group_content . '</div>';
 				} else {
 					$row_content .= $group_content;
 				}
 			}
 
-			$row_html = '<div class="ltw-order-to-board-sync-board-list-row" data-index="' . esc_attr( (string) $index ) . '">' . $row_content . '</div>';
+			$row_html = '<div class="lessthanweb-order-to-board-sync-board-list-row" data-index="' . esc_attr( (string) $index ) . '">' . $row_content . '</div>';
 			
-			$content .= apply_filters(
-				Hooks::FILTER_REPEATABLE_ROW_HTML,
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
+			$content .= apply_filters( Hooks::FILTER_REPEATABLE_ROW_HTML,
 				$row_html,
 				[
 					'section' => $section_name,
@@ -525,12 +603,10 @@ class Page {
 			);
 		}
 
-		$add_destination_label = is_scalar( $row['add_button_label'] ?? '' )
-			? sanitize_text_field( (string) ( $row['add_button_label'] ?? '' ) )
-			: '';
-		$add_destination_label = $add_destination_label !== '' ? $add_destination_label : esc_html__( 'Add New board/list', 'ltw-order-to-board-sync' );
+		$add_destination_label = is_scalar( $row['add_button_label'] ?? '' ) ? sanitize_text_field( (string) ( $row['add_button_label'] ?? '' ) ) : '';
+		$add_destination_label = $add_destination_label !== '' ? $add_destination_label : esc_html__( 'Add New board/list', 'lessthanweb-order-to-board-sync' );
 
-		return $content . '</div><button type="button" class="button ltw-order-to-board-sync-add-board-list">' . esc_html( $add_destination_label ) . '</button></fieldset>';
+		return $content . '</div><button type="button" class="button lessthanweb-order-to-board-sync-add-board-list">' . esc_html( $add_destination_label ) . '</button></fieldset>';
 	}
 
 	/**
@@ -545,35 +621,36 @@ class Page {
 		// List of all WC order statuses
 		$order_statuses = $this->order_statuses->get_list_of_order_statuses();
 
-		$content = '<div class="ltw-order-to-board-sync-content pico">';
+		$content = '<div class="lessthanweb-order-to-board-sync-content pico">';
 
 		// Card destinations cannot be configured until a Trello account is connected.
 		if ( ! $this->trello_oauth->is_connected() ) {
-			$settings_url = admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' );
-			$content .= '<aside class="ltw-order-to-board-sync-connect-prompt">';
-				$content .= '<h2>' . esc_html__( 'Connect Trello to configure card settings', 'ltw-order-to-board-sync' ) . '</h2>';
-				$content .= '<p>' . esc_html__( 'Connect a Trello account before choosing boards and lists for your order statuses.', 'ltw-order-to-board-sync' ) . '</p>';
-				$content .= '<a class="button button-primary" href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Open Trello settings', 'ltw-order-to-board-sync' ) . '</a>';
+			$settings_url = admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' );
+			
+			$content .= '<aside class="lessthanweb-order-to-board-sync-connect-prompt">';
+				$content .= '<h2>' . esc_html__( 'Connect Trello to configure card settings', 'lessthanweb-order-to-board-sync' ) . '</h2>';
+				$content .= '<p>' . esc_html__( 'Connect a Trello account before choosing boards and lists for your order statuses.', 'lessthanweb-order-to-board-sync' ) . '</p>';
+				$content .= '<a class="button button-primary" href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Open Trello settings', 'lessthanweb-order-to-board-sync' ) . '</a>';
 			$content .= '</aside>';
 
 			return $content . '</div>';
 		}
 
-			$content .= '<div class="ltw-order-to-board-sync-info-panel">';
-				$cards_info_text = __( 'These settings are applied per WooCommerce order status. Choose the Trello board and list for each status, then enable card creation only for the order statuses that should send cards to Trello.', 'ltw-order-to-board-sync' );
-				$cards_info_text = apply_filters( Hooks::FILTER_CARDS_INFO_TEXT, $cards_info_text );
+			$content .= '<div class="lessthanweb-order-to-board-sync-info-panel">';
+				$cards_info_text = esc_html__( 'These settings are applied per WooCommerce order status. Choose the Trello board and list for each status, then enable card creation only for the order statuses that should send cards to Trello.', 'lessthanweb-order-to-board-sync' );
+				$cards_info_text = apply_filters( Hooks::FILTER_CARDS_INFO_TEXT, $cards_info_text ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 				$content .= '<p>' . esc_html( $cards_info_text ) . '</p>';
 			$content .= '</div>';
 
-		if ( ! defined( 'LTW_ORDER_TO_BOARD_SYNC_PRO_VERSION' ) ) {
+		if ( ! defined( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PRO_VERSION' ) ) {
 			$pro_url = 'https://www.lessthanweb.com/product/order-to-board-sync-pro/';
 
-			$content .= '<aside class="ltw-order-to-board-sync-pro-promo">';
+			$content .= '<aside class="lessthanweb-order-to-board-sync-pro-promo">';
 				$content .= '<div>';
-					$content .= '<h2>' . esc_html__( 'Need more destinations?', 'ltw-order-to-board-sync' ) . '</h2>';
-					$content .= '<p>' . esc_html__( 'Upgrade to LTW Order-to-Board Sync Pro to send cards for each order status to multiple Trello boards and lists, and to use custom order statuses registered by extensions or custom code.', 'ltw-order-to-board-sync' ) . '</p>';
+					$content .= '<h2>' . esc_html__( 'Need more destinations?', 'lessthanweb-order-to-board-sync' ) . '</h2>';
+					$content .= '<p>' . esc_html__( 'Upgrade to lessthanweb Order-to-Board Sync Pro to send cards for each order status to multiple Trello boards and lists, and to use custom order statuses registered by extensions or custom code.', 'lessthanweb-order-to-board-sync' ) . '</p>';
 				$content .= '</div>';
-				$content .= '<a class="button button-secondary" href="' . esc_url( $pro_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Explore Pro', 'ltw-order-to-board-sync' ) . '</a>';
+				$content .= '<a class="button button-secondary" href="' . esc_url( $pro_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Explore Pro', 'lessthanweb-order-to-board-sync' ) . '</a>';
 			$content .= '</aside>';
 		}
 
@@ -586,10 +663,10 @@ class Page {
 				$is_active = $count === 0 ? 'active' : '';
 
 				// Start of tab content
-				$content .= '<div id="ltw-' . esc_attr( $os_key ) . '" class="tab-content ' . $is_active . '">';
+				$content .= '<div id="lessthanweb-' . esc_attr( $os_key ) . '" class="tab-content ' . $is_active . '">';
 
 					$content .= '<h2>' . esc_html( $order_status ) . '</h2>';
-					$content .= '<p class="ltw-order-to-board-sync-status-note">' . sprintf( __( 'Settings for %s orders only. When this status is reached, the plugin can create a Trello card using the board and list configured below.', 'ltw-order-to-board-sync' ), esc_html( $order_status ) ) . '</p>';
+					$content .= '<p class="lessthanweb-order-to-board-sync-status-note">' . sprintf( esc_html__( 'Settings for %s orders only. When this status is reached, the plugin can create a Trello card using the board and list configured below.', 'lessthanweb-order-to-board-sync' ), esc_html( $order_status ) ) . '</p>';
 					
 					// Get "cards" field configuration and row configuration
 					$all_fields = $this->fields->get_fields();
@@ -607,7 +684,7 @@ class Page {
 				$count++;
 			}
 		} else {
-			$content .= '<li>' . __( 'No order statuses found.', 'ltw-order-to-board-sync' ) . '</li>';
+			$content .= '<li>' . esc_html__( 'No order statuses found.', 'lessthanweb-order-to-board-sync' ) . '</li>';
 		}
 
 		$content .= '</div>';
@@ -625,24 +702,51 @@ class Page {
 	 *
 	 */
 	private function render_tabs( array $tabs_config = [] ): string {
-		$tabs = '<div class="ltw-order-to-board-sync-tabs">';
-			$tabs .= '<ul class="tabs-nav">';
+		$tabs = '<div class="lessthanweb-order-to-board-sync-sidebar">';
+			$tabs .= '<div class="lessthanweb-order-to-board-sync-tabs">';
+				$tabs .= '<ul class="tabs-nav">';
 
-			$count = 0;
+				$count = 0;
 
-			foreach ( $tabs_config as $tabs_key => $tab ) {
-				// First one is always active
-				$is_active = $count === 0 ? 'active' : '';
+				foreach ( $tabs_config as $tabs_key => $tab ) {
+					// First one is always active
+					$is_active = $count === 0 ? 'active' : '';
 
-				$tabs .= '<li><a href="#" class="tab-link ' . $is_active . '" data-tab-id="ltw-' . esc_attr( $tabs_key ) . '">' . esc_html( $tab ) . '</a></li>';
+					$tabs .= '<li><a href="#" class="tab-link ' . $is_active . '" data-tab-id="lessthanweb-' . esc_attr( $tabs_key ) . '">' . esc_html( $tab ) . '</a></li>';
 
-				$count++;
-			}
+					$count++;
+				}
 
-			$tabs .= '</ul>';
-		$tabs .= '</div>';
+				$tabs .= '</ul>';
+			$tabs .= '</div>';
+
+			// Keep help available alongside every secondary navigation list.
+			$tabs .= $this->render_support_card();
+		$tabs .= '</div>'; // sidebar
 
 		return $tabs;
+	}
+
+	/**
+	 * Render the shared support card for plugin section sidebars.
+	 *
+	 * @return	string
+	 * @since	1.0.0
+	 *
+	 */
+	private function render_support_card(): string {
+		// Keep both support options available in every section sidebar.
+		$docs_url = 'https://www.lessthanweb.com/docs/';
+		$support_url = 'https://www.lessthanweb.com/support/';
+
+		return '<aside class="lessthanweb-order-to-board-sync-support-card" aria-label="' . esc_attr__( 'Need help?', 'lessthanweb-order-to-board-sync' ) . '">'
+			. '<h2>' . esc_html__( 'Need help?', 'lessthanweb-order-to-board-sync' ) . '</h2>'
+			. '<p>' . esc_html__( 'Browse the documentation or contact us if you need a hand.', 'lessthanweb-order-to-board-sync' ) . '</p>'
+			. '<div class="lessthanweb-order-to-board-sync-support-links">'
+				. '<a href="' . esc_url( $docs_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'lessthanweb-order-to-board-sync' ) . '</a>'
+				. '<a href="' . esc_url( $support_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Contact us', 'lessthanweb-order-to-board-sync' ) . '</a>'
+			. '</div>'
+			. '</aside>';
 	}
 
 	/**
@@ -655,7 +759,7 @@ class Page {
 	 *
 	 */
 	private function render_tab_content( array $tabs_config = [], string $section = '' ): string {
-		$content = '<div class="ltw-order-to-board-sync-content pico">';
+		$content = '<div class="lessthanweb-order-to-board-sync-content pico">';
 
 		$count = 0;
 
@@ -664,7 +768,7 @@ class Page {
 			$is_active = $count === 0 ? 'active' : '';
 
 			// Start of tab content
-			$content .= '<div id="ltw-' . esc_attr( $tabs_key ) . '" class="tab-content ' . $is_active . '">';
+			$content .= '<div id="lessthanweb-' . esc_attr( $tabs_key ) . '" class="tab-content ' . $is_active . '">';
 
 				$content .= '<h2>' . esc_html( $tab ) . '</h2>';
 				
@@ -697,23 +801,23 @@ class Page {
 	 *
 	 */
 	private function render_setup_message(): string {
-		$settings_url = admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' );
+		$settings_url = admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME . '#settings' );
 
-		return '<aside id="ltw-order-to-board-sync-setup-message" class="pico ltw-order-to-board-sync-setup-message" aria-labelledby="ltw-order-to-board-sync-setup-title">'
-			. '<div class="ltw-order-to-board-sync-setup-header">'
-				. '<span class="ltw-order-to-board-sync-setup-badge">' . esc_html__( 'Getting started', 'ltw-order-to-board-sync' ) . '</span>'
+		return '<aside id="lessthanweb-order-to-board-sync-setup-message" class="pico lessthanweb-order-to-board-sync-setup-message" aria-labelledby="lessthanweb-order-to-board-sync-setup-title">'
+			. '<div class="lessthanweb-order-to-board-sync-setup-header">'
+				. '<span class="lessthanweb-order-to-board-sync-setup-badge">' . esc_html__( 'Getting started', 'lessthanweb-order-to-board-sync' ) . '</span>'
 				. '<span class="dashicons dashicons-admin-plugins" aria-hidden="true"></span>'
 			. '</div>'
-			. '<h2 id="ltw-order-to-board-sync-setup-title">' . esc_html__( 'Connect your store to Trello', 'ltw-order-to-board-sync' ) . '</h2>'
-			. '<p class="ltw-order-to-board-sync-setup-intro">' . esc_html__( "You're almost ready to start creating Trello cards from WooCommerce orders.", 'ltw-order-to-board-sync' ) . '</p>'
-			. '<ol class="ltw-order-to-board-sync-setup-steps">'
-				. '<li>' . esc_html__( 'Create a confidential OAuth 2.0 client in your Trello app settings.', 'ltw-order-to-board-sync' ) . '</li>'
-				. '<li>' . esc_html__( 'Save the client ID and secret in the Trello OAuth 2.0 settings.', 'ltw-order-to-board-sync' ) . '</li>'
-				. '<li>' . esc_html__( 'Connect your Trello account and approve the requested access.', 'ltw-order-to-board-sync' ) . '</li>'
+			. '<h2 id="lessthanweb-order-to-board-sync-setup-title">' . esc_html__( 'Connect your store to Trello', 'lessthanweb-order-to-board-sync' ) . '</h2>'
+			. '<p class="lessthanweb-order-to-board-sync-setup-intro">' . esc_html__( "You're almost ready to start creating Trello cards from WooCommerce orders.", 'lessthanweb-order-to-board-sync' ) . '</p>'
+			. '<ol class="lessthanweb-order-to-board-sync-setup-steps">'
+				. '<li>' . esc_html__( 'Create a confidential OAuth 2.0 client in your Trello app settings.', 'lessthanweb-order-to-board-sync' ) . '</li>'
+				. '<li>' . esc_html__( 'Save the client ID and secret in the Trello OAuth 2.0 settings.', 'lessthanweb-order-to-board-sync' ) . '</li>'
+				. '<li>' . esc_html__( 'Connect your Trello account and approve the requested access.', 'lessthanweb-order-to-board-sync' ) . '</li>'
 			. '</ol>'
 			. '<footer>'
-				. '<a class="button button-primary" href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Start setup', 'ltw-order-to-board-sync' ) . '</a>'
-				. '<small>' . esc_html__( 'OAuth tokens are used only to communicate with Trello and are never added to cards or logs.', 'ltw-order-to-board-sync' ) . '</small>'
+				. '<a class="button button-primary" href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Start setup', 'lessthanweb-order-to-board-sync' ) . '</a>'
+				. '<small>' . esc_html__( 'OAuth tokens are used only to communicate with Trello and are never added to cards or logs.', 'lessthanweb-order-to-board-sync' ) . '</small>'
 			. '</footer>'
 			. '</aside>';
 	}
@@ -731,14 +835,14 @@ class Page {
 
 		$content = '';
 
-		$content .= '<div class="ltw-logs-container-wrapper">';
+		$content .= '<div class="lessthanweb-logs-container-wrapper">';
 
 		// If there are no logs then just show a simple note "no logs".
 		// If we have logs then we shall list them one by one, last one first and so on..
 		if ( empty( $logs ) ) {
-			$content .= '<p>' . __( 'Currently there are no logs available.', 'ltw-order-to-board-sync' ) . '</p>';
+			$content .= '<p>' . esc_html__( 'Currently there are no logs available.', 'lessthanweb-order-to-board-sync' ) . '</p>';
 		} else {
-			$content .= '<div class="ltw-logs-container">';
+			$content .= '<div class="lessthanweb-logs-container">';
 			
 			// Get "log" field configuration
 			$field_config = $this->fields->get_fields()['status'];
@@ -759,7 +863,7 @@ class Page {
 				$content .= $this->ui_components->log( [
 					'section' => '[log][log-' . $key . ']',
 					'id' => $field_config['log']['html_id'] . '-' . $key,
-					'header' => $log['level'] . ' - ' . \date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), absint( $log['timestamp'] ) ),
+					'header' => $log['level'] . ' - ' . \gmdate( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), absint( $log['timestamp'] ) ),
 					'body' => $log['message'],
 					'type' => $log['level'],
 				] );
@@ -773,7 +877,7 @@ class Page {
 			$content .= $this->render_delete_all_logs_btn();
 		}
 		
-		$content .= '</div>'; // Close ltw-logs-container-wrapper
+		$content .= '</div>'; // Close lessthanweb-logs-container-wrapper
 
 		return $content;
 	}
@@ -788,18 +892,19 @@ class Page {
 	 */
 	public function delete_log(): void {
 		// Check nonce
-		check_ajax_referer( 'ltw-order-to-board-sync-ajax-api-nonce', 'nonce' );
+		check_ajax_referer( 'lessthanweb-order-to-board-sync-ajax-api-nonce', 'nonce' );
 
 		// Check user capabilities
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Insufficient permissions.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		// Get log ID from POST data
-		$log_id = isset( $_POST['log_id'] ) ? absint( filter_var( wp_unslash( $_POST['log_id'] ), FILTER_SANITIZE_NUMBER_INT ) ) : '';
+		// Treat malformed array input as invalid instead of passing it to integer sanitizers.
+		$log_id = isset( $_POST['log_id'] ) && is_string( $_POST['log_id'] ) ? absint( filter_var( wp_unslash( $_POST['log_id'] ), FILTER_SANITIZE_NUMBER_INT ) ) : '';
 
 		if ( ! is_int( $log_id ) ) {
-			wp_send_json_error( [ 'message' => __( 'Invalid log ID.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Invalid log ID.', 'lessthanweb-order-to-board-sync' ) ] );
 		} else {
 			// Delete the actual log and return true and if it doesn't exist show WP_Error
 			$deleted_log = $this->logger->delete_log( $log_id );
@@ -807,7 +912,7 @@ class Page {
 			if ( is_wp_error( $deleted_log ) ) {
 				wp_send_json_error( [ 'message' => $deleted_log->get_error_message() ] );
 			} else {
-				wp_send_json_success( [ 'message' => __( 'Log deleted successfully.', 'ltw-order-to-board-sync' ) ] );
+				wp_send_json_success( [ 'message' => esc_html__( 'Log deleted successfully.', 'lessthanweb-order-to-board-sync' ) ] );
 			}
 		}
 	}
@@ -822,20 +927,20 @@ class Page {
 	 */
 	public function delete_all_logs(): void {
 		// Check nonce
-		check_ajax_referer( 'ltw-order-to-board-sync-ajax-api-nonce', 'nonce' );
+		check_ajax_referer( 'lessthanweb-order-to-board-sync-ajax-api-nonce', 'nonce' );
 
 		// Check user capabilities
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Insufficient permissions.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		// Delete all the logs in one go
 		$deleted_all_logs = $this->logger->delete_all();
 
 		if ( $deleted_all_logs ) {
-			wp_send_json_success( [ 'message' => __( 'All logs deleted successfully.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_success( [ 'message' => esc_html__( 'All logs deleted successfully.', 'lessthanweb-order-to-board-sync' ) ] );
 		} else {
-			wp_send_json_error( [ 'message' => __( 'Unable to delete all logs.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Unable to delete all logs.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 	}
 
@@ -848,8 +953,8 @@ class Page {
 	 *
 	 */
 	private function render_delete_all_logs_btn(): string {
-		return '<button type="button" class="button ltw-order-to-board-sync-delete-all-logs" id="ltw-order-to-board-sync-delete-all-logs">'
-			. esc_html__( 'Delete All', 'ltw-order-to-board-sync' )
+		return '<button type="button" class="button lessthanweb-order-to-board-sync-delete-all-logs" id="lessthanweb-order-to-board-sync-delete-all-logs">'
+			. esc_html__( 'Delete All', 'lessthanweb-order-to-board-sync' )
 			. '</button>';
 	}
 }

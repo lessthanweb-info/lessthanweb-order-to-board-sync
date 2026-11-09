@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 /**
  * Contains code for Trello API
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Settings;
-use LTW\Order_To_Board_Sync\Core\Logger;
-use LTW\Order_To_Board_Sync\Core\Hooks;
-use LTW\Order_To_Board_Sync\WC\Order_Info;
+use lessthanweb\Order_To_Board_Sync\Core\Settings;
+use lessthanweb\Order_To_Board_Sync\Core\Logger;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\WC\Order_Info;
 
 /**
  * API Class
@@ -42,7 +42,7 @@ class Trello_API {
 	 *
 	 * @var	const
 	 */
-	private const API_AJAX_NONCE = 'ltw-order-to-board-sync-ajax-api-nonce';
+	private const API_AJAX_NONCE = 'lessthanweb-order-to-board-sync-ajax-api-nonce';
 
 	/**
 	 * Constructor
@@ -59,11 +59,11 @@ class Trello_API {
 		private Trello_OAuth $oauth
 	) {
 		// Ajax call that loads all the available boards.
-		add_action( 'wp_ajax_ltw_trello_get_boards', [ $this, 'get_boards' ] );
+		add_action( 'wp_ajax_lessthanweb_trello_get_boards', [ $this, 'get_boards' ] );
 		// Ajax call for getting available lists inside a board
-		add_action( 'wp_ajax_ltw_trello_get_lists_batch', [ $this, 'get_lists_batch' ] );
+		add_action( 'wp_ajax_lessthanweb_trello_get_lists_batch', [ $this, 'get_lists_batch' ] );
 		// Ajax call to create a new card for an order from admin metabox
-		add_action( 'wp_ajax_ltw_trello_create_card_from_order', [ $this, 'create_card_from_order_ajax' ] );
+		add_action( 'wp_ajax_lessthanweb_trello_create_card_from_order', [ $this, 'create_card_from_order_ajax' ] );
 
 		// Woocommerce hooks
 		// When new order is created in WC from frontend
@@ -71,18 +71,6 @@ class Trello_API {
 
 		// Hook for when status of an order is changed
 		add_action( 'woocommerce_order_status_changed', [ $this, 'order_status_changed' ], 1, 4 );
-    }
-
-	/**
-	 * Check if nonce is valid on each request.
-	 *
-	 * @param	void
-	 * @return	boolean|integer	False if nonce not valid else an integer 1 or 2, depends on when it was made.
-	 * @since	1.0
-	 *
-	 */
-	private function check_ajax_nonce(): bool|int {
-		return check_ajax_referer( self::API_AJAX_NONCE, 'nonce' );
     }
 
 	/**
@@ -129,7 +117,7 @@ class Trello_API {
 		if ( $endpoint === '' ) {
 			return new \WP_Error(
 				'trello_api_no_endpoint_set',
-				__( 'No endpoint set for GET Trello API.', 'ltw-order-to-board-sync' )
+				__( 'No endpoint set for GET Trello API.', 'lessthanweb-order-to-board-sync' )
 			);
 		}
 
@@ -140,7 +128,7 @@ class Trello_API {
 			return $access_token;
 		}
 
-		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_GET_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint );
+		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_GET_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		
 		$request_args = [
 			'headers' => [
@@ -177,13 +165,13 @@ class Trello_API {
 
 		// Handle HTTP error codes
 		if ( $code === 401 ) {
-			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'ltw-order-to-board-sync' ), [ 'status_code' => $code ] );
+			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'lessthanweb-order-to-board-sync' ), [ 'status_code' => $code ] );
 		}
 
 		if ( $code >= 400 ) {
 			return new \WP_Error(
 				'trello_api_http_error',
-				sprintf( __( 'Trello API returned error %d: %s', 'ltw-order-to-board-sync' ), $code, $body ),
+				sprintf( __( 'Trello API returned error %1$d: %2$s', 'lessthanweb-order-to-board-sync' ), $code, sanitize_text_field( $body ) ),
 				[ 'status_code' => $code ]
 			);
 		}
@@ -192,7 +180,7 @@ class Trello_API {
 		if ( empty( $body ) ) {
 			return new \WP_Error( 
 				'trello_api_no_body', 
-				__( 'No body found on GET request.', 'ltw-order-to-board-sync' ) 
+				__( 'No body found on GET request.', 'lessthanweb-order-to-board-sync' )
 			);
 		}
 
@@ -207,6 +195,7 @@ class Trello_API {
 			);
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( HOOKS::FILTER_TRELLO_API_GET_RESPONSE, $data, $endpoint );
 	}
 
@@ -224,7 +213,7 @@ class Trello_API {
 		if ( $endpoint === '' ) {
 			return new \WP_Error(
 				'trello_api_no_endpoint_set',
-				__( 'No endpoint set for POST Trello API.', 'ltw-order-to-board-sync' )
+				__( 'No endpoint set for POST Trello API.', 'lessthanweb-order-to-board-sync' )
 			);
 		}
 		
@@ -235,7 +224,7 @@ class Trello_API {
 			return $access_token;
 		}
 
-		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_POST_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint );
+		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_POST_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		
 		$request_args = [
 			'headers' => [
@@ -270,19 +259,19 @@ class Trello_API {
 		$response_body = wp_remote_retrieve_body( $response );
 
 		if ( $status_code === 401 ) {
-			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'ltw-order-to-board-sync' ), [ 'status_code' => $status_code ] );
+			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'lessthanweb-order-to-board-sync' ), [ 'status_code' => $status_code ] );
 		}
 
 		// Handle HTTP error responses
 		if ( $status_code >= 400 ) {
 			return new \WP_Error(
 				'trello_api_http_error',
-				sprintf( __( 'Trello API error %d: %s', 'ltw-order-to-board-sync' ), $status_code, $response_body )
+				sprintf( __( 'Trello API error %1$d: %2$s', 'lessthanweb-order-to-board-sync' ), $status_code, sanitize_text_field( $response_body ) )
 			);
 		}
 
 		if ( empty( $response_body ) ) {
-			return new \WP_Error( 'trello_api_no_body', __( 'No body returned from Trello API.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_no_body', __( 'No body returned from Trello API.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		$data = json_decode( $response_body, true );
@@ -294,6 +283,7 @@ class Trello_API {
 			);
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( HOOKS::FILTER_TRELLO_API_POST_RESPONSE, $data, $endpoint );
 	}
 
@@ -311,7 +301,7 @@ class Trello_API {
 		if ( $endpoint === '' ) {
 			return new \WP_Error(
 				'trello_api_no_endpoint_set',
-				__( 'No endpoint set for PUT Trello API.', 'ltw-order-to-board-sync' )
+				__( 'No endpoint set for PUT Trello API.', 'lessthanweb-order-to-board-sync' )
 			);
 		}
 		
@@ -322,7 +312,7 @@ class Trello_API {
 			return $access_token;
 		}
 
-		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_REQUEST_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint );
+		$url = add_query_arg( apply_filters( HOOKS::FILTER_TRELLO_API_REQUEST_ARGS, $query_args, $endpoint ), (string) self::API_BASE_URL . $endpoint ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		
 		$request_args = [
 			'method' => 'PUT',
@@ -362,19 +352,19 @@ class Trello_API {
 		$response_body = wp_remote_retrieve_body( $response );
 
 		if ( $status_code === 401 ) {
-			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'ltw-order-to-board-sync' ), [ 'status_code' => $status_code ] );
+			return new \WP_Error( 'trello_oauth_unauthorized', __( 'Trello rejected the OAuth token after refresh. Reconnect your Trello account in the plugin settings.', 'lessthanweb-order-to-board-sync' ), [ 'status_code' => $status_code ] );
 		}
 
 		// Handle HTTP error responses
 		if ( $status_code >= 400 ) {
 			return new \WP_Error(
 				'trello_api_http_error',
-				sprintf( __( 'Trello API error %d: %s', 'ltw-order-to-board-sync' ), $status_code, $response_body )
+				sprintf( __( 'Trello API error %1$d: %2$s', 'lessthanweb-order-to-board-sync' ), $status_code, sanitize_text_field( $response_body ) )
 			);
 		}
 
 		if ( empty( $response_body ) ) {
-			return new \WP_Error( 'trello_api_no_body', __( 'No body returned from Trello API.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_no_body', __( 'No body returned from Trello API.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		$data = json_decode( $response_body, true );
@@ -386,6 +376,7 @@ class Trello_API {
 			);
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		return apply_filters( HOOKS::FILTER_TRELLO_API_REQUEST_RESPONSE, $data, $endpoint );
 	}
 
@@ -420,7 +411,7 @@ class Trello_API {
 				if ( empty( $destinations ) ) {
 					$this->logger->warning(
 						sprintf(
-							__( 'Skipped Trello card creation for order %d because status %s is enabled but has no complete board and list destination selected.', 'ltw-order-to-board-sync' ),
+							__( 'Skipped Trello card creation for order %1$d because status %2$s is enabled but has no complete board and list destination selected.', 'lessthanweb-order-to-board-sync' ),
 							$order->get_id(),
 							$order->get_status()
 						)
@@ -433,12 +424,12 @@ class Trello_API {
 				$order_data = $this->get_order_data( $order );
 
 				// Let extensions resolve destinations before card-creation claims and requests begin.
-				$destinations = apply_filters( Hooks::FILTER_CARD_DESTINATIONS, $destinations, $order, $card );
+				$destinations = apply_filters( Hooks::FILTER_CARD_DESTINATIONS, $destinations, $order, $card ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
 				if ( ! is_array( $destinations ) ) {
 					$this->logger->error(
 						sprintf(
-							__( 'Skipped Trello card creation for order %d because the destination filter did not return an array.', 'ltw-order-to-board-sync' ),
+							__( 'Skipped Trello card creation for order %d because the destination filter did not return an array.', 'lessthanweb-order-to-board-sync' ),
 							$order->get_id()
 						)
 					);
@@ -457,7 +448,7 @@ class Trello_API {
 					) {
 						$this->logger->error(
 							sprintf(
-								__( 'Skipped an invalid Trello destination for order %d because a board or list was missing.', 'ltw-order-to-board-sync' ),
+								__( 'Skipped an invalid Trello destination for order %d because a board or list was missing.', 'lessthanweb-order-to-board-sync' ),
 								$order->get_id()
 							)
 						);
@@ -471,7 +462,7 @@ class Trello_API {
 					if ( $destination['board_id'] === '' || $destination['list_id'] === '' ) {
 						$this->logger->error(
 							sprintf(
-								__( 'Skipped an invalid Trello destination for order %d because a board or list was empty after sanitization.', 'ltw-order-to-board-sync' ),
+								__( 'Skipped an invalid Trello destination for order %d because a board or list was empty after sanitization.', 'lessthanweb-order-to-board-sync' ),
 								$order->get_id()
 							)
 						);
@@ -487,7 +478,7 @@ class Trello_API {
 				if ( empty( $destinations ) ) {
 					$this->logger->warning(
 						sprintf(
-							__( 'Skipped Trello card creation for order %d because no destination was resolved for status %s.', 'ltw-order-to-board-sync' ),
+							__( 'Skipped Trello card creation for order %1$d because no destination was resolved for status %2$s.', 'lessthanweb-order-to-board-sync' ),
 							$order->get_id(),
 							$order->get_status()
 						)
@@ -529,7 +520,7 @@ class Trello_API {
 		if ( $claim === false ) {
 			$this->logger->info(
 				sprintf(
-					__( 'Skipped overlapping Trello card creation for order %d, status %s, destination %s/%s, event %s.', 'ltw-order-to-board-sync' ),
+					__( 'Skipped overlapping Trello card creation for order %1$d, status %2$s, destination %3$s/%4$s, event %5$s.', 'lessthanweb-order-to-board-sync' ),
 					$order->get_id(),
 					$status,
 					$board_id,
@@ -548,7 +539,7 @@ class Trello_API {
 			if ( is_wp_error( $has_card ) ) {
 				$this->logger->error(
 					sprintf(
-						__( 'Could not verify the saved Trello card for order %d, status %s, destination %s/%s, event %s: %s', 'ltw-order-to-board-sync' ),
+						__( 'Could not verify the saved Trello card for order %1$d, status %2$s, destination %3$s/%4$s, event %5$s: %6$s', 'lessthanweb-order-to-board-sync' ),
 						$order->get_id(),
 						$status,
 						$board_id,
@@ -565,7 +556,7 @@ class Trello_API {
 			if ( $has_card ) {
 				$this->logger->info(
 					sprintf(
-						__( 'Skipped Trello card creation for order %d because a card already exists for status %s and destination %s/%s (event %s).', 'ltw-order-to-board-sync' ),
+						__( 'Skipped Trello card creation for order %1$d because a card already exists for status %2$s and destination %3$s/%4$s (event %5$s).', 'lessthanweb-order-to-board-sync' ),
 						$order->get_id(),
 						$status,
 						$board_id,
@@ -579,9 +570,9 @@ class Trello_API {
 
 			// Keep the existing extension hooks immediately before the outbound card request.
 			if ( $event === 'new' ) {
-				do_action( Hooks::ACTION_ORDER_NEW_BEFORE_SEND, $order, $order_data, $card_settings );
+				do_action( Hooks::ACTION_ORDER_NEW_BEFORE_SEND, $order, $order_data, $card_settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 			} else {
-				do_action( Hooks::ACTION_ORDER_STATUS_CHANGED_BEFORE_SEND, $order->get_id(), $old_status, $new_status, $order, $order_data, $card_settings );
+				do_action( Hooks::ACTION_ORDER_STATUS_CHANGED_BEFORE_SEND, $order->get_id(), $old_status, $new_status, $order, $order_data, $card_settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 			}
 
 			$created = $this->create_new_card( $order_data, $card_settings );
@@ -616,7 +607,7 @@ class Trello_API {
 
 		// Hash the complete idempotency key to keep the option name short and avoid raw IDs in option names.
 		$key = hash( 'sha256', wp_json_encode( [ $order_id, $status, $board_id, $list_id ] ) );
-		$option_name = 'ltw_order_to_board_sync_card_claim_' . $key;
+		$option_name = 'lessthanweb_order_to_board_sync_card_claim_' . $key;
 		$claim = time() . ':' . wp_generate_uuid4();
 
 		// The unique option_name index makes this insert the cross-request atomic claim.
@@ -625,6 +616,7 @@ class Trello_API {
 		}
 
 		// Read directly from the database so an object-cache entry cannot hide the current owner.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Atomic claim must bypass object cache; options table unique index provides the lock.
 		$existing_claim = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s",
@@ -635,7 +627,7 @@ class Trello_API {
 		if ( ! is_string( $existing_claim ) ) {
 			$this->logger->error(
 				sprintf(
-					__( 'Could not acquire the Trello card creation claim for order %d, status %s, destination %s/%s.', 'ltw-order-to-board-sync' ),
+					__( 'Could not acquire the Trello card creation claim for order %1$d, status %2$s, destination %3$s/%4$s.', 'lessthanweb-order-to-board-sync' ),
 					$order_id,
 					$status,
 					$board_id,
@@ -656,6 +648,7 @@ class Trello_API {
 		}
 
 		// Delete only the exact expired claim so concurrent stale-claim recovery cannot remove a newer owner.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Conditional delete of exact claim token; required for safe stale-claim recovery.
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
@@ -675,7 +668,7 @@ class Trello_API {
 		if ( add_option( $option_name, $claim, '', false ) ) {
 			$this->logger->warning(
 				sprintf(
-					__( 'Reclaimed a stale Trello card creation claim for order %d, status %s, destination %s/%s.', 'ltw-order-to-board-sync' ),
+					__( 'Reclaimed a stale Trello card creation claim for order %1$d, status %2$s, destination %3$s/%4$s.', 'lessthanweb-order-to-board-sync' ),
 					$order_id,
 					$status,
 					$board_id,
@@ -688,7 +681,7 @@ class Trello_API {
 
 		$this->logger->info(
 			sprintf(
-				__( 'Another request acquired the Trello card creation claim for order %d, status %s, destination %s/%s during stale-claim recovery.', 'ltw-order-to-board-sync' ),
+				__( 'Another request acquired the Trello card creation claim for order %1$d, status %2$s, destination %3$s/%4$s during stale-claim recovery.', 'lessthanweb-order-to-board-sync' ),
 				$order_id,
 				$status,
 				$board_id,
@@ -715,7 +708,9 @@ class Trello_API {
 
 		// Recreate the same key used during acquisition and compare the token to avoid releasing another request's claim.
 		$key = hash( 'sha256', wp_json_encode( [ $order_id, $status, $board_id, $list_id ] ) );
-		$option_name = 'ltw_order_to_board_sync_card_claim_' . $key;
+		$option_name = 'lessthanweb_order_to_board_sync_card_claim_' . $key;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Conditional delete of exact claim token so we never release another request's claim.
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
@@ -727,7 +722,7 @@ class Trello_API {
 		if ( $deleted === false ) {
 			$this->logger->error(
 				sprintf(
-					__( 'Could not release the Trello card creation claim for order %d, status %s, destination %s/%s.', 'ltw-order-to-board-sync' ),
+					esc_html__( 'Could not release the Trello card creation claim for order %1$d, status %2$s, destination %3$s/%4$s.', 'lessthanweb-order-to-board-sync' ),
 					$order_id,
 					$status,
 					$board_id,
@@ -808,14 +803,14 @@ class Trello_API {
 		// Order does not exist?
 		if ( ! $order ) {
 			$this->logger->error( 
-				sprintf( __( 'Order with the ID %d does not exist.', 'ltw-order-to-board-sync' ), $order_id )
+				sprintf( esc_html__( 'Order with the ID %d does not exist.', 'lessthanweb-order-to-board-sync' ), $order_id )
 			);
 
 			return false;
 		}
 
 		if ( $this->set_order_data( $order, 'new' ) ) {
-			do_action( Hooks::ACTION_ORDER_NEW_AFTER_SEND, $order );
+			do_action( Hooks::ACTION_ORDER_NEW_AFTER_SEND, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		}
 
 		return true;
@@ -842,7 +837,7 @@ class Trello_API {
 		if ( $old_status === $new_status ) {
 			$this->logger->error( 
 				sprintf( 
-					__( 'Card was not created for order ID %d as there was no status change. Old status was %s and updated status is %s.', 'ltw-order-to-board-sync' ),
+					__( 'Card was not created for order ID %1$d as there was no status change. Old status was %2$s and updated status is %3$s.', 'lessthanweb-order-to-board-sync' ),
 					$order_id,
 					$old_status,
 					$new_status
@@ -855,7 +850,7 @@ class Trello_API {
 		// Check that the $order object is not false
 		if ( ! $order ) {
 			$this->logger->error( 
-				sprintf( __( 'Order with the ID %d does not exist.', 'ltw-order-to-board-sync' ), $order_id )
+				sprintf( esc_html__( 'Order with the ID %d does not exist.', 'lessthanweb-order-to-board-sync' ), $order_id )
 			);
 
 			return false;
@@ -863,10 +858,10 @@ class Trello_API {
 
 		$created = $this->set_order_data( $order, 'status', $old_status, $new_status );
 
-		do_action( Hooks::ACTION_ORDER_STATUS_CHANGED, $order_id, $old_status, $new_status, $order );
+		do_action( Hooks::ACTION_ORDER_STATUS_CHANGED, $order_id, $old_status, $new_status, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
 		if ( $created ) {
-			do_action( Hooks::ACTION_ORDER_STATUS_CHANGED_AFTER_SEND, $order_id, $old_status, $new_status, $order );
+			do_action( Hooks::ACTION_ORDER_STATUS_CHANGED_AFTER_SEND, $order_id, $old_status, $new_status, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		}
 
 		return true;
@@ -881,23 +876,49 @@ class Trello_API {
 	 *
 	 */
 	public function fetch_boards( bool $use_cache = true ): array|\WP_Error {
-		if ( $use_cache ) {
-			$boards_cache = get_transient( 'ltw_order_to_board_sync_boards' );
+		$boards_cache = $use_cache ? get_transient( 'lessthanweb_order_to_board_sync_boards' ) : false;
+		$result = ! empty( $boards_cache ) ? $boards_cache : $this->get( 'members/me/boards', [ 'fields' => 'id,name' ] );
 
-			if ( ! empty( $boards_cache ) ) {
-				return $boards_cache;
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		if ( ! is_array( $result ) ) {
+			delete_transient( 'lessthanweb_order_to_board_sync_boards' );
+
+			return new \WP_Error(
+				'trello_api_invalid_boards_response',
+				__( 'Trello returned invalid board data.', 'lessthanweb-order-to-board-sync' )
+			);
+		}
+
+		$boards = [];
+
+		// Validate cached and fresh API data before returning or persisting it.
+		foreach ( $result as $board ) {
+			if ( ! is_array( $board )
+				|| ! isset( $board['id'], $board['name'] )
+				|| ! is_string( $board['id'] )
+				|| ! is_string( $board['name'] )
+				|| ! preg_match( '/^[0-9a-fA-F]{24}$/', $board['id'] )
+			) {
+				delete_transient( 'lessthanweb_order_to_board_sync_boards' );
+
+				return new \WP_Error(
+					'trello_api_invalid_boards_response',
+					__( 'Trello returned invalid board data.', 'lessthanweb-order-to-board-sync' )
+				);
 			}
+
+			$boards[] = [
+				'id' => $board['id'],
+				'name' => sanitize_text_field( $board['name'] ),
+			];
 		}
 
-		$result = $this->get( 'members/me/boards', [
-			'fields' => 'id,name',
-		] );
+		set_transient( 'lessthanweb_order_to_board_sync_boards', $boards, HOUR_IN_SECONDS * 12 );
 
-		if ( ! is_wp_error( $result ) ) {
-			set_transient( 'ltw_order_to_board_sync_boards', $result, HOUR_IN_SECONDS * 12 );
-		}
-
-		return $result;
+		return $boards;
 	}
 
 	/**
@@ -911,10 +932,10 @@ class Trello_API {
 	 *
 	 */
 	public function get_boards(): void {
-		$this->check_ajax_nonce();
+		check_ajax_referer( self::API_AJAX_NONCE, 'nonce' );
 
 		if ( ! $this->check_permissions() ) {
-			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		$result = $this->fetch_boards();
@@ -925,7 +946,7 @@ class Trello_API {
 			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
 		}
 
-		wp_send_json_success( [ 'message' => __( 'We found some boards!', 'ltw-order-to-board-sync' ), 'boards' => $result ] );
+		wp_send_json_success( [ 'message' => __( 'We found some boards!', 'lessthanweb-order-to-board-sync' ), 'boards' => $result ] );
 	}
 
 	/**
@@ -938,18 +959,19 @@ class Trello_API {
 	 */
 	public function fetch_lists( array $board_ids ): array|\WP_Error {
 		if ( empty( $board_ids ) ) {
-			return new \WP_Error( 'trello_api_no_board_ids_provided', __( 'No board IDs provided', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_no_board_ids_provided', __( 'No board IDs provided', 'lessthanweb-order-to-board-sync' ) );
 		}
 
+		// Ignore malformed IDs before applying string sanitization and the strict Trello ID check.
 		$board_ids = array_values(
 			array_filter(
-				array_map( 'sanitize_text_field', $board_ids ),
+				array_map( 'sanitize_text_field', array_filter( $board_ids, 'is_string' ) ),
 				static fn( string $board_id ): bool => (bool) preg_match( '/^[0-9a-fA-F]{24}$/', $board_id )
 			)
 		);
 
 		if ( empty( $board_ids ) ) {
-			return new \WP_Error( 'trello_api_invalid_board_ids', __( 'No valid board IDs provided.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_invalid_board_ids', __( 'No valid board IDs provided.', 'lessthanweb-order-to-board-sync' ) );
 		}
 		
 		$all_lists = [];
@@ -979,13 +1001,26 @@ class Trello_API {
 	 *
 	 */
 	public function get_lists_batch(): void {
-		$this->check_ajax_nonce();
+		check_ajax_referer( self::API_AJAX_NONCE, 'nonce' );
 
 		if ( ! $this->check_permissions() ) {
-			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
-		$board_ids = isset( $_POST['board_ids'] ) ? ( array ) $_POST['board_ids'] : [];
+		// Unsplash and sanitize only scalar board IDs before passing them to the API layer.
+		$board_ids = [];
+
+		if ( isset( $_POST['board_ids'] ) ) {
+			$raw_board_ids = wp_unslash( $_POST['board_ids'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Immediately unslashed and type-checked below.
+
+			if ( is_array( $raw_board_ids ) ) {
+				foreach ( $raw_board_ids as $board_id ) {
+					if ( is_string( $board_id ) ) {
+						$board_ids[] = sanitize_text_field( $board_id );
+					}
+				}
+			}
+		}
 
 		$result = $this->fetch_lists( $board_ids );
 
@@ -993,7 +1028,7 @@ class Trello_API {
 			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
 		}
 
-		wp_send_json_success( [ 'message' => __( 'We found some lists!', 'ltw-order-to-board-sync' ), 'lists' => $result ] );
+		wp_send_json_success( [ 'message' => __( 'We found some lists!', 'lessthanweb-order-to-board-sync' ), 'lists' => $result ] );
 	}
 
 	/**
@@ -1007,28 +1042,29 @@ class Trello_API {
 	 * 
 	 */
 	public function create_card_from_order_ajax(): void {
-		$this->check_ajax_nonce();
+		check_ajax_referer( self::API_AJAX_NONCE, 'nonce' );
 
 		if ( ! $this->check_permissions() ) {
-			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Insufficient permissions.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
-		$order_id = isset( $_POST['order_id'] ) ? absint( wp_unslash( $_POST['order_id'] ) ) : 0;
-		$board_id = isset( $_POST['board_id'] ) ? sanitize_text_field( wp_unslash( $_POST['board_id'] ) ) : '';
-		$list_id = isset( $_POST['list_id'] ) ? sanitize_text_field( wp_unslash( $_POST['list_id'] ) ) : '';
+		// Reject array-shaped values before sanitizers receive these scalar request fields.
+		$order_id = isset( $_POST['order_id'] ) && is_string( $_POST['order_id'] ) ? absint( wp_unslash( $_POST['order_id'] ) ) : 0;
+		$board_id = isset( $_POST['board_id'] ) && is_string( $_POST['board_id'] ) ? sanitize_text_field( wp_unslash( $_POST['board_id'] ) ) : '';
+		$list_id = isset( $_POST['list_id'] ) && is_string( $_POST['list_id'] ) ? sanitize_text_field( wp_unslash( $_POST['list_id'] ) ) : '';
 
 		if ( $order_id <= 0 ) {
-			wp_send_json_error( [ 'message' => __( 'Invalid order ID.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Invalid order ID.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		if ( empty( $board_id ) || empty( $list_id ) ) {
-			wp_send_json_error( [ 'message' => __( 'Board ID and List ID are required.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Board ID and List ID are required.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order ) {
-			wp_send_json_error( [ 'message' => sprintf( __( 'Order with ID %d not found.', 'ltw-order-to-board-sync' ), $order_id ) ] );
+			wp_send_json_error( [ 'message' => sprintf( __( 'Order with ID %d not found.', 'lessthanweb-order-to-board-sync' ), $order_id ) ] );
 		}
 
 		// Determine card settings from plugin settings for this order status
@@ -1066,12 +1102,12 @@ class Trello_API {
 		$claim = $this->acquire_card_creation_claim( $order_id, $order_status, $board_id, $list_id );
 
 		if ( $claim === false ) {
-			wp_send_json_error( [ 'message' => __( 'Card creation for this order status and destination is already in progress. Please try again shortly.', 'ltw-order-to-board-sync' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Card creation for this order status and destination is already in progress. Please try again shortly.', 'lessthanweb-order-to-board-sync' ) ] );
 		}
 
 		$response = [
 			'success' => false,
-			'message' => __( 'Failed to create card. Check logs for details.', 'ltw-order-to-board-sync' ),
+			'message' => __( 'Failed to create card. Check logs for details.', 'lessthanweb-order-to-board-sync' ),
 		];
 
 		try {
@@ -1082,7 +1118,7 @@ class Trello_API {
 			if ( is_wp_error( $has_card ) ) {
 				$this->logger->error(
 					sprintf(
-						__( 'Could not verify the saved Trello card for order %d, status %s, destination %s/%s: %s', 'ltw-order-to-board-sync' ),
+						__( 'Could not verify the saved Trello card for order %1$d, status %2$s, destination %3$s/%4$s: %5$s', 'lessthanweb-order-to-board-sync' ),
 						$order_id,
 						$order_status,
 						$board_id,
@@ -1092,9 +1128,9 @@ class Trello_API {
 					$has_card->get_error_data()
 				);
 
-				$response['message'] = __( 'Could not verify whether a Trello card already exists. Please try again later.', 'ltw-order-to-board-sync' );
+				$response['message'] = __( 'Could not verify whether a Trello card already exists. Please try again later.', 'lessthanweb-order-to-board-sync' );
 			} elseif ( $has_card ) {
-				$response['message'] = __( 'A Trello card already exists for this order status and destination.', 'ltw-order-to-board-sync' );
+				$response['message'] = __( 'A Trello card already exists for this order status and destination.', 'lessthanweb-order-to-board-sync' );
 			} else {
 				// Use the shared card creator so automatic and manual requests persist history consistently.
 				$created = $this->create_new_card( $order_data, $card_settings );
@@ -1103,12 +1139,12 @@ class Trello_API {
 					$this->clear_card_failure( $order );
 
 					// Read the saved history after creation so the metabox response includes the new card.
-					$meta_data = $order->get_meta( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD );
+					$meta_data = $order->get_meta( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD );
 					$meta_data_history = is_array( $meta_data ) && isset( $meta_data['history'] ) && is_array( $meta_data['history'] ) ? $meta_data['history'] : [];
 
 					$response = [
 						'success' => true,
-						'message' => __( 'Card created successfully.', 'ltw-order-to-board-sync' ),
+						'message' => __( 'Card created successfully.', 'lessthanweb-order-to-board-sync' ),
 						'html' => Helper::get_trello_card_history_data( $meta_data_history )['html'],
 					];
 				} else {
@@ -1161,15 +1197,15 @@ class Trello_API {
 
 		if ( ! $current_order ) {
 			return new \WP_Error(
-				'ltw_order_to_board_sync_order_missing',
+				'lessthanweb_order_to_board_sync_order_missing',
 				sprintf(
-					__( 'Could not reload order %d while checking for an existing Trello card.', 'ltw-order-to-board-sync' ),
+					__( 'Could not reload order %d while checking for an existing Trello card.', 'lessthanweb-order-to-board-sync' ),
 					$order->get_id()
 				)
 			);
 		}
 
-		$meta = $current_order->get_meta( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
+		$meta = $current_order->get_meta( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
 		$meta = is_array( $meta ) ? $meta : [];
 		$history = is_array( $meta ) && isset( $meta['history'] ) && is_array( $meta['history'] ) ? $meta['history'] : [];
 		$history_updated = false;
@@ -1221,7 +1257,7 @@ class Trello_API {
 
 					return new \WP_Error(
 						'trello_api_invalid_card_response',
-						__( 'Trello returned an unexpected response while checking a saved card.', 'ltw-order-to-board-sync' )
+						__( 'Trello returned an unexpected response while checking a saved card.', 'lessthanweb-order-to-board-sync' )
 					);
 				}
 
@@ -1271,7 +1307,7 @@ class Trello_API {
 
 		$meta['history'] = $history;
 		
-		$order->update_meta_data( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
+		$order->update_meta_data( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
 		$order->save();
 	}
 
@@ -1284,7 +1320,7 @@ class Trello_API {
 	 * @since	1.0.0
 	 */
 	private function record_card_failure( object $order, array $settings ): void {
-		$meta = $order->get_meta( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
+		$meta = $order->get_meta( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
 
 		$meta = is_array( $meta ) ? $meta : [];
 
@@ -1295,7 +1331,7 @@ class Trello_API {
 			'date' => time(),
 		];
 
-		$order->update_meta_data( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
+		$order->update_meta_data( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
 
 		$order->save();
 	}
@@ -1308,7 +1344,7 @@ class Trello_API {
 	 * @since	1.0.0
 	 */
 	private function clear_card_failure( object $order ): void {
-		$meta = $order->get_meta( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
+		$meta = $order->get_meta( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
 
 		if ( ! is_array( $meta ) || ! isset( $meta['last_failure'] ) ) {
 			return;
@@ -1316,7 +1352,7 @@ class Trello_API {
 
 		unset( $meta['last_failure'] );
 
-		$order->update_meta_data( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
+		$order->update_meta_data( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $meta );
 		
 		$order->save();
 	}
@@ -1336,7 +1372,7 @@ class Trello_API {
 		if ( is_wp_error( $result) ) {
 			$this->logger->error( $result->get_error_message(), $result->get_error_data() );
 
-			return new \WP_Error( 'trello_api_get_single_board_info', __( 'Failed getting single board info.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_get_single_board_info', __( 'Failed getting single board info.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		return $result;
@@ -1359,7 +1395,7 @@ class Trello_API {
 		if ( is_wp_error( $result) ) {
 			$this->logger->error( $result->get_error_message(), $result->get_error_data() );
 
-			return new \WP_Error( 'trello_api_get_single_list_info', __( 'Failed getting single list info.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'trello_api_get_single_list_info', __( 'Failed getting single list info.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		return $result;
@@ -1416,13 +1452,13 @@ class Trello_API {
 	public function create_new_card( array $order, array $card_settings = [] ): bool {
 		// If $order is empty, stop here and log the error
 		if ( empty( $order ) ) {
-			$this->logger->error( __( 'Cannot post to Trello if $order has no order data in "create_new_card method".', 'ltw-order-to-board-sync' ) );
+			$this->logger->error( esc_html__( 'Cannot post to Trello if $order has no order data in "create_new_card method".', 'lessthanweb-order-to-board-sync' ) );
 			
 			return false;
 		}
 
 		if ( empty( $card_settings['board_id'] ) || empty( $card_settings['list_id'] ) ) {
-			$this->logger->error( __( 'Board and list are required before creating a Trello card.', 'ltw-order-to-board-sync' ) );
+			$this->logger->error( esc_html__( 'Board and list are required before creating a Trello card.', 'lessthanweb-order-to-board-sync' ) );
 
 			return false;
 		}
@@ -1431,7 +1467,7 @@ class Trello_API {
 		if ( ! preg_match( '/^[0-9a-fA-F]{24}$/', $card_settings['board_id'] ) ) {
 			$this->logger->error(
 				sprintf( 
-					__( 'Board ID <strong>%s</strong> is not in a valid format. Please check the selected board for order status <strong>%s</strong>.', 'ltw-order-to-board-sync' ),
+					esc_html__( 'Board ID <strong>%1$s</strong> is not in a valid format. Please check the selected board for order status <strong>%2$s</strong>.', 'lessthanweb-order-to-board-sync' ),
 					$card_settings['board_id'],
 					$order['basic_info']['order_status']
 					)
@@ -1447,11 +1483,23 @@ class Trello_API {
 			return false;
 		}
 
+		if ( ! isset( $board_info['id'], $board_info['name'] )
+			|| ! is_string( $board_info['id'] )
+			|| ! is_string( $board_info['name'] )
+			|| ! preg_match( '/^[0-9a-fA-F]{24}$/', $board_info['id'] )
+		) {
+			$this->logger->error( __( 'Trello returned invalid board data.', 'lessthanweb-order-to-board-sync' ) );
+
+			return false;
+		}
+
+		$board_name = sanitize_text_field( $board_info['name'] );
+
 		// Trello requires that the list_id is 24 chars long and contains 0-9 and a-z
 		if ( ! preg_match( '/^[0-9a-fA-F]{24}$/', $card_settings['list_id'] ) ) {
 			$this->logger->error(
 				sprintf( 
-					__( 'List ID <strong>%s</strong> is not in a valid format. Please check the selected list for order status <strong>%s</strong>.', 'ltw-order-to-board-sync' ),
+					esc_html__( 'List ID <strong>%1$s</strong> is not in a valid format. Please check the selected list for order status <strong>%2$s</strong>.', 'lessthanweb-order-to-board-sync' ),
 					$card_settings['list_id'],
 					$order['basic_info']['order_status']
 				)
@@ -1466,7 +1514,7 @@ class Trello_API {
 		// Card name, use default if empty.
 		// Card name can be formatted as user wants so we need to replace the placeholders with actual content.
 		$card_name = $card_settings['card_name'] ?? '';
-		$card['name'] = $card_name ? $this->replace_order_placeholders( $card_name, $order ) : sprintf( __( 'Order #%d', 'ltw-order-to-board-sync' ), $order['basic_info']['id'] );
+		$card['name'] = $card_name ? $this->replace_order_placeholders( $card_name, $order ) : sprintf( esc_html__( 'Order #%d', 'lessthanweb-order-to-board-sync' ), $order['basic_info']['id'] );
 
 		// Build description sections separately so extensions can insert or reorder them.
 		$description_sections = [];
@@ -1480,13 +1528,13 @@ class Trello_API {
 		}
 
 		// First thing we always add is the order ID.
-		$description_sections['order'] = "# " . __( 'Order', 'ltw-order-to-board-sync' ) . " #{$order['basic_info']['id']}" . Helper::new_line( 3 );
+		$description_sections['order'] = "# " . esc_html__( 'Order', 'lessthanweb-order-to-board-sync' ) . " #{$order['basic_info']['id']}" . Helper::new_line( 3 );
 
 		// Including billing address if turned on
 		$description_sections['billing_address'] = '';
 
 		if ( ! empty( $card_settings['billing_address'] ) && ! empty( $order['billing_address'] ) ) {
-			$description_sections['billing_address'] .= "**" . __( 'Billing address', 'ltw-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
+			$description_sections['billing_address'] .= "**" . esc_html__( 'Billing address', 'lessthanweb-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
 			$description_sections['billing_address'] .= $order['billing_address'] . Helper::new_line( 2 );
 			$description_sections['billing_address'] .= "---" . Helper::new_line();
 		}
@@ -1495,7 +1543,7 @@ class Trello_API {
 		$description_sections['shipping_address'] = '';
 
 		if ( ! empty( $card_settings['shipping_address'] ) && ! empty( $order['shipping_address'] ) ) {
-			$description_sections['shipping_address'] .= "**" . __( 'Shipping address', 'ltw-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
+			$description_sections['shipping_address'] .= "**" . esc_html__( 'Shipping address', 'lessthanweb-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
 			$description_sections['shipping_address'] .= $order['shipping_address'] . Helper::new_line( 2 );
 			$description_sections['shipping_address'] .= "---" . Helper::new_line();
 		}
@@ -1504,7 +1552,7 @@ class Trello_API {
 		$description_sections['shipping_method'] = '';
 
 		if ( ! empty( $card_settings['shipping_method'] ) ) {
-			$description_sections['shipping_method'] .= "**" . __( 'Shipping method and costs', 'ltw-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
+			$description_sections['shipping_method'] .= "**" . esc_html__( 'Shipping method and costs', 'lessthanweb-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
 			$description_sections['shipping_method'] .= $order['shipping_method'];
 		}
 
@@ -1512,7 +1560,7 @@ class Trello_API {
 		$description_sections['ordered_products'] = '';
 
 		if ( ! empty( $card_settings['ordered_products'] ) && ! empty( $order['ordered_products'] ) ) {
-			$description_sections['ordered_products'] .= "**" . __( 'Products', 'ltw-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
+			$description_sections['ordered_products'] .= "**" . esc_html__( 'Products', 'lessthanweb-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
 
 			foreach ( $order['ordered_products'] as $product ) {
 				$product_name = $product['name'] ?? '';
@@ -1537,21 +1585,21 @@ class Trello_API {
 
 		// Include total costs
 		if ( ! empty( $card_settings['total_costs'] ) ) {
-			$description_sections['total_costs'] = "**" . __( 'Total costs', 'ltw-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
+			$description_sections['total_costs'] = "**" . esc_html__( 'Total costs', 'lessthanweb-order-to-board-sync' ) . "**" . Helper::new_line( 2 );
 			$description_sections['total_costs'] .= $order['total_costs'];
 		}
 
-		$description_sections = apply_filters( Hooks::FILTER_TRELLO_CARD_DESCRIPTION_SECTIONS, $description_sections, $order, $card_settings );
+		$description_sections = apply_filters( Hooks::FILTER_TRELLO_CARD_DESCRIPTION_SECTIONS, $description_sections, $order, $card_settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
 		if ( ! is_array( $description_sections ) ) {
-			$this->logger->error( __( 'Card description sections must be returned as an array.', 'ltw-order-to-board-sync' ) );
+			$this->logger->error( esc_html__( 'Card description sections must be returned as an array.', 'lessthanweb-order-to-board-sync' ) );
 
 			return false;
 		}
 
 		foreach ( $description_sections as $section_id => $section_content ) {
 			if ( ! is_string( $section_id ) || ! is_string( $section_content ) ) {
-				$this->logger->error( __( 'Card description sections must have string IDs and string content.', 'ltw-order-to-board-sync' ) );
+				$this->logger->error( esc_html__( 'Card description sections must have string IDs and string content.', 'lessthanweb-order-to-board-sync' ) );
 
 				return false;
 			}
@@ -1563,7 +1611,7 @@ class Trello_API {
 		if ( ! empty( $card_settings['card_due_date'] ) && ! Helper::validate_date( $card_settings['card_due_date'] ) ) {
 			$this->logger->error(
 				sprintf( 
-					__( 'Due date format is invalid for order status <strong>%s</strong>. Please try resaving the Cards page.', 'ltw-order-to-board-sync' ),
+					esc_html__( 'Due date format is invalid for order status <strong>%s</strong>. Please try resaving the Cards page.', 'lessthanweb-order-to-board-sync' ),
 					$order['basic_info']['order_status']
 				)
 			);
@@ -1588,7 +1636,7 @@ class Trello_API {
 		}
 
 		// Make the request to Trello
-		$card = apply_filters( Hooks::FILTER_TRELLO_CARD_DATA, $card, $order, $card_settings );
+		$card = apply_filters( Hooks::FILTER_TRELLO_CARD_DATA, $card, $order, $card_settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 		$result = $this->post( 'cards', $card );
 
 		if ( is_wp_error( $result) ) {
@@ -1597,26 +1645,30 @@ class Trello_API {
 
 			return false;
 		} else {
-			// First let's check if the card ID is available.
-			$card_id = $result['id'] ?? '';
+			// Validate identifiers before using or storing data from the API response.
+			$card_id = $result['id'] ?? null;
+			$response_list_id = $result['idList'] ?? null;
 
-			if ( ! $card_id ) {
-				// For some reason card id what not sent back, maybe we should check for error from API?
-				$this->logger->error( __( 'No card ID found.', 'ltw-order-to-board-sync' ) );
+			if ( ! is_string( $card_id )
+				|| ! preg_match( '/^[0-9a-fA-F]{24}$/', $card_id )
+				|| ! is_string( $response_list_id )
+				|| ! preg_match( '/^[0-9a-fA-F]{24}$/', $response_list_id )
+			) {
+				$this->logger->error( __( 'Trello returned invalid card data.', 'lessthanweb-order-to-board-sync' ) );
 
 				return false;
-			} else {
-				// Now let's update a card with color option.
-				if ( ! empty( $card_settings['card_color'] ) ) {
-					$this->set_card_color( $card_id, $card_settings );
-				}
+			}
+
+			// Now let's update a card with color option.
+			if ( ! empty( $card_settings['card_color'] ) ) {
+				$this->set_card_color( $card_id, $card_settings );
 			}
 
 			// Get order info
 			$order_info = wc_get_order( $order['basic_info']['id'] );
 			
 			// Load the existing data if there is any
-			$order_meta = $order_info->get_meta( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
+			$order_meta = $order_info->get_meta( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, true );
 
 			if ( empty( $order_meta ) || ! is_array( $order_meta ) ) {
 				$order_meta = [];
@@ -1631,14 +1683,20 @@ class Trello_API {
 				// Just set it to empty and voila..
 				$list_name = '';
 			} else {
-				$list_name = $list_name_result['name'];
+				if ( ! isset( $list_name_result['name'] ) || ! is_string( $list_name_result['name'] ) ) {
+					$this->logger->error( __( 'Trello returned invalid list data.', 'lessthanweb-order-to-board-sync' ) );
+
+					return false;
+				}
+
+				$list_name = sanitize_text_field( $list_name_result['name'] );
 			}
 
 			// Add another entry to the history array
 			$history_entry = [
 				'board_id' => $board_info['id'],
-				'board_name' => $board_info['name'],
-				'list_id' => $result['idList'],
+				'board_name' => $board_name,
+				'list_id' => $response_list_id,
 				'card_id' => $card_id,
 				'list_name' => $list_name,
 				'status' => $order['basic_info']['order_status'],
@@ -1647,16 +1705,16 @@ class Trello_API {
 			$order_meta['history'][] = $history_entry;
 
 			// Save data into order meta
-			$order_info->update_meta_data( LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $order_meta );
+			$order_info->update_meta_data( LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD, $order_meta );
 			$order_info->save();
 
-			do_action( Hooks::ACTION_CARD_CREATED, $order_info, $history_entry, $result );
+			do_action( Hooks::ACTION_CARD_CREATED, $order_info, $history_entry, $result ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
-			if ( LTW_ORDER_TO_BOARD_SYNC_DEBUG ) {
-				$this->logger->debug( __( 'Updated order meta history', 'ltw-order-to-board-sync' ), $order_meta['history'] );
+			if ( LESSTHANWEB_ORDER_TO_BOARD_SYNC_DEBUG ) {
+				$this->logger->debug( esc_html__( 'Updated order meta history', 'lessthanweb-order-to-board-sync' ), $order_meta['history'] );
 			}
 
-			$this->logger->info( __( 'Succesfully created card.', 'ltw-order-to-board-sync' ) );
+			$this->logger->info( esc_html__( 'Succesfully created card.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		return true;
@@ -1689,9 +1747,9 @@ class Trello_API {
 		if ( is_wp_error( $result ) ) {
 			$this->logger->error( $result->get_error_message(), $result->get_error_data() );
 		} else {
-			// Used for debugging purposes only..
-			if ( LTW_ORDER_TO_BOARD_SYNC_DEBUG ) {
-				$this->logger->debug( __( 'Succesfully updated card.', 'ltw-order-to-board-sync' ), $result );
+			// Avoid persisting the unfiltered API response in debug logs.
+			if ( LESSTHANWEB_ORDER_TO_BOARD_SYNC_DEBUG ) {
+				$this->logger->debug( esc_html__( 'Succesfully updated card.', 'lessthanweb-order-to-board-sync' ) );
 			}
 		}
 	}
@@ -1723,9 +1781,9 @@ class Trello_API {
 		if ( is_wp_error( $result ) ) {
 			$this->logger->error( $result->get_error_message(), $result->get_error_data() );
 		} else {
-			// Used for debugging purposes only..
-			if ( LTW_ORDER_TO_BOARD_SYNC_DEBUG ) {
-				$this->logger->debug( __( 'Succesfully updated card.', 'ltw-order-to-board-sync' ), $result );
+			// Avoid persisting the unfiltered API response in debug logs.
+			if ( LESSTHANWEB_ORDER_TO_BOARD_SYNC_DEBUG ) {
+				$this->logger->debug( esc_html__( 'Succesfully updated card.', 'lessthanweb-order-to-board-sync' ) );
 			}
 		}
 	}

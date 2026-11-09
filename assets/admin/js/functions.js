@@ -1,76 +1,76 @@
 jQuery( document ).ready( function( $ ) {
-    const ltw_order_to_board_sync_top_tab_links = $( '.ltw-order-to-board-sync-top-tabs .top-tab' );
-    const ltw_order_to_board_sync_top_tab_contents = $('.ltw-order-to-board-sync-top-content');
-    let ltw_order_to_board_sync_current_top_tab_id = 'cards';
+    const lessthanweb_order_to_board_sync_top_tab_links = $( '.lessthanweb-order-to-board-sync-top-tabs .top-tab' );
+    const lessthanweb_order_to_board_sync_top_tab_contents = $('.lessthanweb-order-to-board-sync-top-content');
+    let lessthanweb_order_to_board_sync_current_top_tab_id = 'cards';
 
-    $( '.ltw-order-to-board-sync-top-tabs' ).on( 'click', '.top-tab', function ( e ) {
+    $( '.lessthanweb-order-to-board-sync-top-tabs' ).on( 'click', '.top-tab', function ( e ) {
         e.preventDefault();
 
         const tab_id = $( this ).data( 'top-id' );
 
         history.replaceState( null, null, '#' + tab_id );
 
-        ltw_order_to_board_sync_current_top_tab_id = tab_id;
+        lessthanweb_order_to_board_sync_current_top_tab_id = tab_id;
 
-        ltw_order_to_board_sync_set_active_tab();
+        lessthanweb_order_to_board_sync_set_active_tab();
     } );
 
-    $( '.ltw-order-to-board-sync-container' ).on( 'click', '.tab-link', function ( e ) {
+    $( '.lessthanweb-order-to-board-sync-container' ).on( 'click', '.tab-link', function ( e ) {
         e.preventDefault();
 
         const tab_id = $( this ).data( 'tab-id' );
 
-        $( '.ltw-order-to-board-sync-top-content-' + ltw_order_to_board_sync_current_top_tab_id + ' .ltw-order-to-board-sync-container .tab-link' ).removeClass( 'active' );
-        $( '.ltw-order-to-board-sync-top-content-' + ltw_order_to_board_sync_current_top_tab_id + ' .ltw-order-to-board-sync-container .tab-content' ).removeClass( 'active' );
+        $( '.lessthanweb-order-to-board-sync-top-content-' + lessthanweb_order_to_board_sync_current_top_tab_id + ' .lessthanweb-order-to-board-sync-container .tab-link' ).removeClass( 'active' );
+        $( '.lessthanweb-order-to-board-sync-top-content-' + lessthanweb_order_to_board_sync_current_top_tab_id + ' .lessthanweb-order-to-board-sync-container .tab-content' ).removeClass( 'active' );
 
         $( this ).addClass( 'active' );
 
-        $( this ).parents( '.ltw-order-to-board-sync-container' ).children( '.ltw-order-to-board-sync-content' ).children( '#' + tab_id ).addClass( 'active' );
+        $( this ).parents( '.lessthanweb-order-to-board-sync-container' ).children( '.lessthanweb-order-to-board-sync-content' ).children( '#' + tab_id ).addClass( 'active' );
     } );
 
     //  Set active tab based on hash from URL if there is any
-    let ltw_order_to_board_sync_set_active_tab = function() {
+    let lessthanweb_order_to_board_sync_set_active_tab = function() {
         let hash = window.location.hash.substring( 1 );
 
         if ( hash ) {
             //  Hide all tabs
-            ltw_order_to_board_sync_top_tab_links.removeClass( 'active' );
-            ltw_order_to_board_sync_top_tab_contents.removeClass( 'active' );
+            lessthanweb_order_to_board_sync_top_tab_links.removeClass( 'active' );
+            lessthanweb_order_to_board_sync_top_tab_contents.removeClass( 'active' );
 
             //  Find and activate the tab with matching data-top-id
-            const active_tab = $( '.ltw-order-to-board-sync-top-tabs' ).children( '.top-tab[data-top-id="' + hash + '"]' );
+            const active_tab = $( '.lessthanweb-order-to-board-sync-top-tabs' ).children( '.top-tab[data-top-id="' + hash + '"]' );
 
             if ( active_tab.length ) {
                 active_tab.addClass( 'active' );
 
-                ltw_order_to_board_sync_current_top_tab_id = hash;
+                lessthanweb_order_to_board_sync_current_top_tab_id = hash;
 
                 // Update the forms URL as well
-                $( '#ltw-order-to-board-sync-current-page' ).val( $( '#ltw-order-to-board-sync-page-url' ).val() + '#' + hash );
+                $( '#lessthanweb-order-to-board-sync-current-page' ).val( $( '#lessthanweb-order-to-board-sync-page-url' ).val() + '#' + hash );
 
-                $( '.ltw-order-to-board-sync-main-content' ).children( '.ltw-order-to-board-sync-top-content-' + hash ).addClass( 'active' );
+                $( '.lessthanweb-order-to-board-sync-main-content' ).children( '.lessthanweb-order-to-board-sync-top-content-' + hash ).addClass( 'active' );
             }
         }
     }
 
-    ltw_order_to_board_sync_set_active_tab();
+    lessthanweb_order_to_board_sync_set_active_tab();
 
     //  Clicking the back/forward buttons in browser changes the tab as well
-    $( window ).on( 'hashchange', ltw_order_to_board_sync_set_active_tab );
+    $( window ).on( 'hashchange', lessthanweb_order_to_board_sync_set_active_tab );
 
     //  Delete log handler
-    $( '.ltw-logs-container' ).on( 'click', '.ltw-wc-log-delete', function( e ) {
+    $( '.lessthanweb-logs-container' ).on( 'click', '.lessthanweb-wc-log-delete', function( e ) {
         e.preventDefault();
 
         const log_id = $( this ).data( 'log-id' );
-        const log_element = $( '#ltw-order-to-board-sync-' + log_id );
+        const log_element = $( '#lessthanweb-order-to-board-sync-' + log_id );
 
         $.ajax( {
             type: 'post',
-            url: ltw_order_to_board_sync.ajax_url,
+            url: lessthanweb_order_to_board_sync.ajax_url,
             data: {
-                'action': 'ltw_trello_delete_log',
-                'nonce': ltw_order_to_board_sync.nonce,
+                'action': 'lessthanweb_trello_delete_log',
+                'nonce': lessthanweb_order_to_board_sync.nonce,
                 'log_id': log_id
             },
             dataType: 'json',
@@ -81,13 +81,16 @@ jQuery( document ).ready( function( $ ) {
                         $( this ).remove();
 
                         //  Check if there are any logs left
-                        if ( $( '.ltw-logs-container .ltw-wc-log' ).length === 0 ) {
+                        if ( $( '.lessthanweb-logs-container .lessthanweb-wc-log' ).length === 0 ) {
                             //  If no logs remain, show "no logs" message
-                            $( '#ltw-logs' ).html( '<h2>' + ltw_order_to_board_sync.texts.logs + '</h2><p>' + ltw_order_to_board_sync.texts.no_logs_available + '</p>' );
+                            $( '#lessthanweb-logs' ).empty().append(
+                                $( '<h2>' ).text( lessthanweb_order_to_board_sync.texts.logs ),
+                                $( '<p>' ).text( lessthanweb_order_to_board_sync.texts.no_logs_available )
+                            );
                         }
                     } );
                 } else {
-                    console.error( ltw_order_to_board_sync.texts.error, response.data.message );
+                    console.error( lessthanweb_order_to_board_sync.texts.error, response.data.message );
                 }
             },
             error: function() {
@@ -97,28 +100,31 @@ jQuery( document ).ready( function( $ ) {
     } );
 
     //  Delete all logs handler
-    $( '.ltw-order-to-board-sync-content' ).on( 'click', '#ltw-order-to-board-sync-delete-all-logs', function( e ) {
+    $( '.lessthanweb-order-to-board-sync-content' ).on( 'click', '#lessthanweb-order-to-board-sync-delete-all-logs', function( e ) {
         e.preventDefault();
 
         //  Ask for confirmation as this is a destructive, irreversible action
-        if ( ! window.confirm( ltw_order_to_board_sync.texts.confirm_delete_all_logs ) ) {
+        if ( ! window.confirm( lessthanweb_order_to_board_sync.texts.confirm_delete_all_logs ) ) {
             return;
         }
 
         $.ajax( {
             type: 'post',
-            url: ltw_order_to_board_sync.ajax_url,
+            url: lessthanweb_order_to_board_sync.ajax_url,
             data: {
-                'action': 'ltw_trello_delete_all_logs',
-                'nonce': ltw_order_to_board_sync.nonce
+                'action': 'lessthanweb_trello_delete_all_logs',
+                'nonce': lessthanweb_order_to_board_sync.nonce
             },
             dataType: 'json',
             success: function( response ) {
                 if ( response.success ) {
                     //  Show "no logs" message and remove the logs list + delete-all button
-                    $( '#ltw-logs' ).html( '<h2>' + ltw_order_to_board_sync.texts.logs + '</h2><p>' + ltw_order_to_board_sync.texts.no_logs_available + '</p>' );
+                    $( '#lessthanweb-logs' ).empty().append(
+                        $( '<h2>' ).text( lessthanweb_order_to_board_sync.texts.logs ),
+                        $( '<p>' ).text( lessthanweb_order_to_board_sync.texts.no_logs_available )
+                    );
                 } else {
-                    console.error( ltw_order_to_board_sync.texts.error, response.data.message );
+                    console.error( lessthanweb_order_to_board_sync.texts.error, response.data.message );
                 }
             },
             error: function() {
@@ -128,7 +134,7 @@ jQuery( document ).ready( function( $ ) {
     } );
 
     //  Color picker field
-    $( '.ltw-order-to-board-sync .ltw-order-to-board-sync-color-field' ).on( 'click', 'li', function( e ) {
+    $( '.lessthanweb-order-to-board-sync .lessthanweb-order-to-board-sync-color-field' ).on( 'click', 'li', function( e ) {
         e.preventDefault();
 
         let selected_color = $( this ).data( 'color' );
@@ -142,14 +148,14 @@ jQuery( document ).ready( function( $ ) {
         $( this ).closest( 'details' ).children( 'input[type=hidden]' ).val( selected_color );
 
         //  Change summary
-        $( this ).closest( '.ltw-order-to-board-sync-color-field' ).children( 'summary' ).html( $( this ).text() );
+        $( this ).closest( '.lessthanweb-order-to-board-sync-color-field' ).children( 'summary' ).text( $( this ).text() );
 
         //  Close dropdown
-        $( this ).closest( '.ltw-order-to-board-sync-color-field' ).attr( 'open', false );
+        $( this ).closest( '.lessthanweb-order-to-board-sync-color-field' ).attr( 'open', false );
     } );
 
     //  Due date field
-    $( '.ltw-order-to-board-sync .ltw-order-to-board-sync-due-date' ).on( 'change', 'input[type="number"], select', function( e ) {
+    $( '.lessthanweb-order-to-board-sync .lessthanweb-order-to-board-sync-due-date' ).on( 'change', 'input[type="number"], select', function( e ) {
         e.preventDefault();
 
         let hidden_field = $( this ).parent().children( 'input[type=hidden]' );
@@ -159,5 +165,51 @@ jQuery( document ).ready( function( $ ) {
 
         //  Save the result to hidden field
         hidden_field.val( due_date );
+    } );
+
+    //  Copy the status report using the clipboard API, with a legacy fallback
+    $( '#wp-status-copy-btn' ).on( 'click', function() {
+        const textarea = document.getElementById( 'wp-status-plain-text' );
+        const feedback = document.getElementById( 'wp-status-copy-feedback' );
+
+        if ( ! textarea ) {
+            return;
+        }
+
+        const text = textarea.value;
+        const show_feedback = function( message ) {
+            if ( feedback ) {
+                feedback.textContent = message;
+            }
+
+            setTimeout( function() {
+                if ( feedback ) {
+                    feedback.textContent = '';
+                }
+            }, 2500 );
+        };
+        const fallback_copy = function() {
+            textarea.hidden = false;
+            textarea.select();
+
+            try {
+                document.execCommand( 'copy' );
+                show_feedback( 'Copied!' );
+            } catch ( error ) {
+                show_feedback( 'Copy failed – please select the text manually.' );
+            }
+
+            textarea.hidden = true;
+        };
+
+        if ( navigator.clipboard && navigator.clipboard.writeText ) {
+            navigator.clipboard.writeText( text ).then( function() {
+                show_feedback( 'Copied!' );
+            } ).catch( function() {
+                fallback_copy();
+            } );
+        } else {
+            fallback_copy();
+        }
     } );
 } );

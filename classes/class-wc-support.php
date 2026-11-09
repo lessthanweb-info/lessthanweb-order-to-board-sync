@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\WC;
+namespace lessthanweb\Order_To_Board_Sync\WC;
 
 /**
  * WooCommerce compatibility declarations
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -42,7 +42,7 @@ class Support {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
             \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 
 				'custom_order_tables', 
-				LTW_ORDER_TO_BOARD_SYNC_PLUGIN_DIR . LTW_ORDER_TO_BOARD_SYNC_PLUGIN_FILENAME, 
+				LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_DIR . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_FILENAME,
 				true
 			);
         }

@@ -1,5 +1,5 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 use WP_Error;
 
@@ -7,7 +7,7 @@ use WP_Error;
  * A logger class that handles database logging throughout the application.
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since	    1.0.0
  */
 
@@ -28,7 +28,7 @@ class Logger {
 	 *
 	 * @var	string
 	 */
-	private $option_name = 'ltw_order_to_board_sync_logs';
+	private $option_name = 'lessthanweb_order_to_board_sync_logs';
 
 	/**
 	 * Log levels
@@ -264,7 +264,7 @@ class Logger {
 
 			return true;
 		} else {
-			return new \WP_Error( 'log_id_not_found', __( 'Log ID not found!', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'log_id_not_found', __( 'Log ID not found!', 'lessthanweb-order-to-board-sync' ) );
 		}
 	}
 

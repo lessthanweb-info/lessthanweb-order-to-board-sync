@@ -1,10 +1,10 @@
-=== LTW Order-to-Board Sync for WooCommerce and Trello ===
+=== lessthanweb Order-to-Board Sync ===
 Contributors: lessthanweb
 Tags: woocommerce, trello, order management, automation, project management
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,9 +33,22 @@ Connect to Trello with OAuth 2.0 before enabling card creation. Create a confide
 
 The Free plugin requires WooCommerce and a Trello account. It sends the card details you configure, including any order or customer values inserted with placeholders, to Trello through the Trello API. Review the configured card content and your Trello account permissions before enabling automatic card creation. Trello handles received information under its own privacy policy.
 
+== Screenshots ==
+
+1. Configure card creation for Processing orders with a placeholder-based card title.
+2. Keep card creation disabled for On hold orders while configuring their board, list, and card title.
+
+== External services ==
+
+This plugin connects to Atlassian OAuth and the Trello API. These services let you connect your Trello account, choose boards and lists, and create Trello cards.
+
+Atlassian OAuth at auth.atlassian.com is used only when an administrator connects or reconnects a Trello account, or when the plugin needs to renew its authorization. During connection, your browser sends Atlassian the app's client ID, requested permissions, and your site's return address. After you approve access, the plugin sends Atlassian the authorization code and app's client ID and secret to get access tokens. It sends a refresh token when it needs to keep the connection active. This service is provided by Atlassian. See the [Customer Agreement (terms)](https://www.atlassian.com/legal/atlassian-customer-agreement) and [Privacy Policy](https://www.atlassian.com/legal/privacy-policy).
+
+The Trello API at api.trello.com is used to verify the connected account and retrieve the boards and lists available to it. When card creation is enabled for an order status, or an administrator creates a card manually, the plugin sends the configured card details to Trello, such as the card title, description, board, list, due date, color, and position. Order or customer information is sent only if it is included in the configured card details, for example by using a placeholder in the title or description. Trello receives these requests through the connected account's access token. Trello is provided by Atlassian. See the [Customer Agreement (terms)](https://www.atlassian.com/legal/atlassian-customer-agreement), [Trello Product-Specific Terms](https://www.atlassian.com/legal/product-terms#trello), and [Privacy Policy](https://www.atlassian.com/legal/privacy-policy).
+
 == Pro version ==
 
-The optional, separately installed LTW Order-to-Board Sync Pro add-on builds on this Free plugin. Pro requires the Free plugin and adds:
+The optional, separately installed lessthanweb Order-to-Board Sync Pro add-on builds on this Free plugin. Pro requires the Free plugin and adds:
 
 * Multiple Trello board and list destinations for each order status.
 * Conditional routing to Board/List destinations based on order details.
@@ -44,7 +57,7 @@ The optional, separately installed LTW Order-to-Board Sync Pro add-on builds on 
 * Trello card URLs saved in order history and displayed as links.
 * Automatic archiving of recorded Trello cards when an order is cancelled or refunded.
 
-Pro is not required to use the Free plugin. Learn more about the Pro add-on at https://www.lessthanweb.com/order-to-board-sync-plugin.
+Pro is not required to use the Free plugin. Learn more about the Pro add-on at https://www.lessthanweb.com/product/order-to-board-sync-pro/.
 
 == Requirements ==
 
@@ -89,15 +102,17 @@ No. The Free plugin works without Pro. Pro is a separate add-on for multiple des
 
 The plugin sends the card information configured for an enabled order status. This can include order or customer information when you add the supported placeholders to a card name or description. Pro can also send selected order metadata. Only configure and share information you intend to send to Trello.
 
-== Extension API ==
-
-The Free plugin provides documented actions and filters for extensions. See docs/EXTENSION_API.md in the plugin package. Pro extends the Free plugin through these extension points.
-
 == Support ==
 
-https://www.lessthanweb.com/order-to-board-sync-plugin
+https://www.lessthanweb.com/support/
 
 == Changelog ==
+
+= 1.2.0 =
+* Removed languages files as the online service provided by wordpress.org will be used for translations.
+* Changed some sanitazion stuff.
+* Removed inline Javascript and moved it to a Javascript file.
+* Added some notes regarding support.
 
 = 1.1.0 =
 * Added extension hooks to retain validated per-destination settings and filter the Board/List destinations used before card creation.
@@ -107,4 +122,4 @@ https://www.lessthanweb.com/order-to-board-sync-plugin
 * Removed compiled .mo file for English.
 
 = 1.0.0 =
-* Initial release of LTW Order-to-Board Sync for WooCommerce and Trello.
+* Initial release of lessthanweb Order-to-Board Sync for WooCommerce and Trello.

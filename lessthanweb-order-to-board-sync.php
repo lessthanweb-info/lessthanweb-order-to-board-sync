@@ -1,24 +1,23 @@
 <?php
 /*
- * LTW Order-to-Board Sync for WooCommerce and Trello
+ * lessthanweb Order-to-Board Sync
  *
- * @package           LTW_Order_To_Board_Sync
+ * @package           lessthanweb_Order_To_Board_Sync
  * @author            lessthanweb
  * @copyright         2026 lessthanweb
  * @license           GPL v2 or later
  *
  * @wordpress-plugin
- * Plugin Name:       LTW Order-to-Board Sync for WooCommerce and Trello
- * Plugin URI:        https://www.lessthanweb.com/order-to-board-sync-plugin
+ * Plugin Name:       lessthanweb Order-to-Board Sync
+ * Plugin URI:        https://www.lessthanweb.com/product/order-to-board-sync-pro/
  * Description:       Automatically create Trello cards from WooCommerce orders with configurable, per-status card details.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.8
  * Requires PHP:      8.3
  * Requires Plugins:  woocommerce
  * Author:            lessthanweb
- * Author URI:        https://www.lessthanweb.com/order-to-board-sync-plugin
- * Text Domain:       ltw-order-to-board-sync
- * Domain Path:       /languages
+ * Author URI:        https://www.lessthanweb.com/
+ * Text Domain:       lessthanweb-order-to-board-sync
  * 
  * WC requires at least: 8.0
  * WC tested up to: 8.3
@@ -27,7 +26,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace LTW\Order_To_Board_Sync;
+namespace lessthanweb\Order_To_Board_Sync;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_VERSION', '1.1.0' );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_VERSION', '1.2.0' );
 
 /**
  * Production or dev mode?
@@ -47,7 +46,7 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_VERSION', '1.1.0' );
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_DEBUG', false );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_DEBUG', false );
 
 /**
  * Option name for storing the plugin settings.
@@ -55,7 +54,7 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_DEBUG', false );
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_SETTINGS', 'ltw_order_to_board_sync_settings' );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_SETTINGS', 'lessthanweb_order_to_board_sync_settings' );
 
 /**
  * Admin page query string name
@@ -63,7 +62,7 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_SETTINGS', 'ltw_order_to_board_sync_settings' )
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME', 'ltw-order-to-board-sync' );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME', 'lessthanweb-order-to-board-sync' );
 
 /**
  * Hour in seconds, mainly used for setting the transient expire time
@@ -71,7 +70,7 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME', 'ltw-order-to-board-sync' );
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_HOUR_IN_SECONDS', 3600 );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_HOUR_IN_SECONDS', 3600 );
 
 /**
  * Set plugin path and url
@@ -79,9 +78,9 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_HOUR_IN_SECONDS', 3600 );
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'LTW_ORDER_TO_BOARD_SYNC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'LTW_ORDER_TO_BOARD_SYNC_PLUGIN_FILENAME', basename( __FILE__ ) );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_FILENAME', basename( __FILE__ ) );
 
 /**
  * Meta field key for storing Trello cards data on orders
@@ -89,7 +88,7 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_PLUGIN_FILENAME', basename( __FILE__ ) );
  * @since	1.0.0
  *
  */
-define( 'LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD', 'ltw_order_to_board_sync_cards' );
+define( 'LESSTHANWEB_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD', 'lessthanweb_order_to_board_sync_cards' );
 
 /**
  * Autoload classes
@@ -97,17 +96,17 @@ define( 'LTW_ORDER_TO_BOARD_SYNC_ORDER_META_FIELD', 'ltw_order_to_board_sync_car
  * @since	1.0.0
  *
  */
-require_once LTW_ORDER_TO_BOARD_SYNC_PLUGIN_DIR . 'autoload.php';
+require_once LESSTHANWEB_ORDER_TO_BOARD_SYNC_PLUGIN_DIR . 'autoload.php';
 
-use LTW\Order_To_Board_Sync\Core;
-use LTW\Order_To_Board_Sync\WC;
-use LTW\Order_To_Board_Sync\Admin;
-use LTW\Order_To_Board_Sync\Status;
+use lessthanweb\Order_To_Board_Sync\Core;
+use lessthanweb\Order_To_Board_Sync\WC;
+use lessthanweb\Order_To_Board_Sync\Admin;
+use lessthanweb\Order_To_Board_Sync\Status;
 
 /**
- * LTW Order-to-Board Sync plugin bootstrap
+ * lessthanweb Order-to-Board Sync plugin bootstrap
  */
-class LTW_Order_To_Board_Sync {
+class lessthanweb_Order_To_Board_Sync {
     /**
      * Constructor
      *
@@ -179,7 +178,7 @@ new WC\Support();
 add_action(
 	'init',
 	static function (): void {
-		new LTW_Order_To_Board_Sync();
+		new lessthanweb_Order_To_Board_Sync();
 	},
 	10
 );
@@ -196,7 +195,7 @@ if ( is_admin() ) {
 				return;
 			}
 
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'LTW Order-to-Board Sync requires WooCommerce to be installed and active.', 'ltw-order-to-board-sync' ) . '</p></div>';
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'lessthanweb Order-to-Board Sync requires WooCommerce to be installed and active.', 'lessthanweb-order-to-board-sync' ) . '</p></div>';
 		}
 	);
 }

@@ -3,6 +3,8 @@
 		"/Users/anze/Development/wordpress"
 	],
 	"intelephense.stubs": [
-		"wordpress"
+		"wordpress",
+		"Core",
+  		"standard"
 	]
 }

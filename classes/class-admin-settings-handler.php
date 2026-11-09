@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Admin;
+namespace lessthanweb\Order_To_Board_Sync\Admin;
 
 /**
  * Handles admin settings form submission and processing.
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,8 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Settings;
-use LTW\Order_To_Board_Sync\Admin\Notices;
+use lessthanweb\Order_To_Board_Sync\Core\Settings;
+use lessthanweb\Order_To_Board_Sync\Core\Hooks;
+use lessthanweb\Order_To_Board_Sync\Admin\Notices;
 
 /**
  * Settings_Handler Class
@@ -31,7 +32,8 @@ class Settings_Handler {
 	 *
 	 */
 	public function __construct( private Settings $settings, private Notices $notices ) {
-		add_action( 'admin_post_save_settings', [ $this, 'handle_save' ] );
+		// Register a plugin-specific route for this settings form.
+		add_action( 'admin_post_' . Hooks::ACTION_SAVE_SETTINGS, [ $this, 'handle_save' ] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 	}
 
 	/**
@@ -47,19 +49,28 @@ class Settings_Handler {
 	 */
 	public function handle_save(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to save these settings.', 'ltw-order-to-board-sync' ) );
+			wp_die( esc_html__( 'You do not have permission to save these settings.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		// Verify nonce
-		if ( ! isset( $_POST['ltw_order_to_board_sync_settings'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ltw_order_to_board_sync_settings'] ) ), 'ltw_order_to_board_sync_save_settings' ) ) {
-			wp_die( __( 'Sorry, your nonce did not verify.', 'ltw-order-to-board-sync' ) );
+		if ( ! isset( $_POST['lessthanweb_order_to_board_sync_settings'] ) || ! is_string( $_POST['lessthanweb_order_to_board_sync_settings'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['lessthanweb_order_to_board_sync_settings'] ) ), 'lessthanweb_order_to_board_sync_save_settings' ) ) {
+			wp_die( esc_html__( 'Sorry, your nonce did not verify.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
-		// Get URL redirection value
-		$url_redirect_to = isset( $_POST['ltw_order_to_board_sync_current_page'] ) && ! empty( $_POST['ltw_order_to_board_sync_current_page'] ) ? ( string ) $_POST['ltw_order_to_board_sync_current_page'] : '';
+		// Accept only a URL string and sanitize it before the redirect.
+		$url_redirect_to = '';
 
-		// Get settings data from POST
-		$data = isset( $_POST['ltw_order_to_board_sync'] ) && ! empty( $_POST['ltw_order_to_board_sync'] ) ? ( array ) $_POST['ltw_order_to_board_sync'] : [];
+		if ( isset( $_POST['lessthanweb_order_to_board_sync_current_page'] ) && is_string( $_POST['lessthanweb_order_to_board_sync_current_page'] ) ) {
+			$url_redirect_to = esc_url_raw( wp_unslash( $_POST['lessthanweb_order_to_board_sync_current_page'] ) );
+		}
+
+		// Unslash only the expected settings array; field-specific sanitization runs before extension filters.
+		$data = [];
+
+		if ( isset( $_POST['lessthanweb_order_to_board_sync'] ) && is_array( $_POST['lessthanweb_order_to_board_sync'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Settings::save() applies field-specific sanitization before persistence.
+			$data = wp_unslash( $_POST['lessthanweb_order_to_board_sync'] );
+		}
 
 		// Save settings and get result.
         // Array on success and WP_Error on issue..
@@ -69,14 +80,14 @@ class Settings_Handler {
 		if ( is_wp_error( $result ) ) {
 			$this->notices->error( $result->get_error_message() );
 		} else {
-			$this->notices->success( __( 'Settings saved successfully!', 'ltw-order-to-board-sync' ) );
+			$this->notices->success( __( 'Settings saved successfully!', 'lessthanweb-order-to-board-sync' ) );
 		}
 
 		// Redirect back to settings page
 		if ( ! empty( $url_redirect_to ) ) {
 			wp_safe_redirect( $url_redirect_to );
 		} else {
-			wp_safe_redirect( admin_url( 'admin.php?page=' . LTW_ORDER_TO_BOARD_SYNC_PAGE_NAME ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=' . LESSTHANWEB_ORDER_TO_BOARD_SYNC_PAGE_NAME ) );
 		}
 		
         die();

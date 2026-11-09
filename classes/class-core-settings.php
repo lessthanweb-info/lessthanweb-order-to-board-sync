@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Core;
+namespace lessthanweb\Order_To_Board_Sync\Core;
 
 /**
  * Contains code for settings.
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Core\Fields;
+use lessthanweb\Order_To_Board_Sync\Core\Fields;
 
 /**
  * Settings Class
@@ -27,8 +27,8 @@ class Settings {
 	 * @since	1.0.0
 	 *
 	 */
-	private const SETUP_COMPLETE_OPTION = 'ltw_order_to_board_sync_setup_complete';
-	public const OAUTH_CLIENT_SECRET_OPTION = 'ltw_order_to_board_sync_oauth_client_secret';
+	private const SETUP_COMPLETE_OPTION = 'lessthanweb_order_to_board_sync_setup_complete';
+	public const OAUTH_CLIENT_SECRET_OPTION = 'lessthanweb_order_to_board_sync_oauth_client_secret';
 
 	/**
 	 * Constructor
@@ -55,18 +55,36 @@ class Settings {
 	public function save( array $data ): array|\WP_Error {
 		// If no data, return error
 		if ( empty( $data ) || ! is_array( $data ) ) {
-			return new \WP_Error( 'no_data', __( 'No settings data provided.', 'ltw-order-to-board-sync' ) );
+			return new \WP_Error( 'no_data', __( 'No settings data provided.', 'lessthanweb-order-to-board-sync' ) );
 		}
 
-		// Filter data before saving to DB and before sanitazion and validation
-		$data = apply_filters( HOOKS::FILTER_SETTINGS_BEFORE_SAVE, $data );
+		// Reject unregistered sections, contexts, and fields before extensions receive submitted data.
+		$structure_validation = $this->fields->validate_settings_structure( $data );
+
+		if ( is_wp_error( $structure_validation ) ) {
+			return $structure_validation;
+		}
+
+		// Give extensions sanitized values while keeping the hook ahead of validation.
+		$data = $this->fields->sanitize_for_extension_filter( $data );
+		$data = apply_filters( HOOKS::FILTER_SETTINGS_BEFORE_SAVE, $data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
+
+		if ( ! is_array( $data ) ) {
+			return new \WP_Error( 'invalid_settings_filter_result', __( 'The settings filter must return an array.', 'lessthanweb-order-to-board-sync' ) );
+		}
+
+		// Ensure extensions did not add unregistered keys before the data is persisted.
+		$structure_validation = $this->fields->validate_settings_structure( $data );
+
+		if ( is_wp_error( $structure_validation ) ) {
+			return $structure_validation;
+		}
+
 		$old_settings = $this->get_all();
 		$old_client_secret = (string) get_option( self::OAUTH_CLIENT_SECRET_OPTION, '' );
 
 		// An empty password input means the stored OAuth client secret should remain unchanged.
-		if (
-			isset( $data['settings']['trello_api'] )
-		) {
+		if ( isset( $data['settings']['trello_api'] ) ) {
 			if ( ! isset( $data['settings']['trello_api']['oauth_client_id'] ) ) {
 				$data['settings']['trello_api']['oauth_client_id'] = $this->get_setting_value( $old_settings, 'settings', 'trello_api', 'oauth_client_id' );
 			}
@@ -75,6 +93,9 @@ class Settings {
 				$data['settings']['trello_api']['oauth_client_secret'] = $old_client_secret;
 			}
 		}
+
+		// Sanitize filter changes as well, including values added by extensions.
+		$data = $this->fields->sanitize_for_extension_filter( $data );
 
 		// Validate and sanitize fields before saving
 		$validated = $this->fields->validate_and_sanitize( $data );
@@ -85,6 +106,7 @@ class Settings {
 		}
 
 		$new_client_secret = $old_client_secret;
+
 		if ( isset( $validated['settings']['trello_api']['oauth_client_secret'] ) ) {
 			$new_client_secret = $this->get_setting_value( $validated, 'settings', 'trello_api', 'oauth_client_secret' );
 			unset( $validated['settings']['trello_api']['oauth_client_secret'] );
@@ -92,17 +114,17 @@ class Settings {
 		}
 
 		// Save to database
-		update_option( LTW_ORDER_TO_BOARD_SYNC_SETTINGS, $validated );
+		update_option( LESSTHANWEB_ORDER_TO_BOARD_SYNC_SETTINGS, $validated );
 
 		if ( isset( $data['settings']['trello_api'] ) && (
 			$this->get_setting_value( $old_settings, 'settings', 'trello_api', 'oauth_client_id' ) !== $this->get_setting_value( $validated, 'settings', 'trello_api', 'oauth_client_id' )
 			|| $old_client_secret !== $new_client_secret
 		) ) {
-			delete_option( 'ltw_order_to_board_sync_trello_oauth_tokens' );
+			delete_option( 'lessthanweb_order_to_board_sync_trello_oauth_tokens' );
 			$this->reset_setup_complete();
 		}
 
-		do_action( HOOKS::ACTION_SETTINGS_UPDATED, $old_settings, $validated );
+		do_action( HOOKS::ACTION_SETTINGS_UPDATED, $old_settings, $validated ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
 		return $validated;
 	}
@@ -116,9 +138,9 @@ class Settings {
 	 *
 	 */
 	public function get_all(): array {
-		$settings = get_option( LTW_ORDER_TO_BOARD_SYNC_SETTINGS, [] );
+		$settings = get_option( LESSTHANWEB_ORDER_TO_BOARD_SYNC_SETTINGS, [] );
 
-		$settings = apply_filters( HOOKS::FILTER_SETTINGS_AFTER_LOAD, $settings );
+		$settings = apply_filters( HOOKS::FILTER_SETTINGS_AFTER_LOAD, $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is a prefixed class constant.
 
 		return $settings;
 	}

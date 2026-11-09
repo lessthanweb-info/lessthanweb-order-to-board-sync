@@ -1,5 +1,5 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Status;
+namespace lessthanweb\Order_To_Board_Sync\Status;
 
 /**
  * Contains system info methods.
@@ -7,7 +7,7 @@ namespace LTW\Order_To_Board_Sync\Status;
  * Basically get as much info as required and echo it. This is mostly used for debugging purposes..
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -31,7 +31,7 @@ class System_Info {
 	public function render_full_page(): string {
 		$plain_text = $this->get_plain_text_report();
 
-		$html = '<div class="ltw-order-to-board-sync-system-info">';
+		$html = '<div class="lessthanweb-order-to-board-sync-system-info">';
 		$html .= $this->display_server_info();
 		$html .= $this->display_website_info();
 		$html .= $this->render_copy_button( $plain_text );
@@ -48,26 +48,27 @@ class System_Info {
 	 *
 	 */
 	public function display_server_info(): string {
-		$html = '<h2>' . __( 'Server Environment', 'ltw-order-to-board-sync' ) . '</h2>' . "\n";
+		// Escape translated strings as they are inserted into generated HTML.
+		$html = '<h2>' . esc_html__( 'Server Environment', 'lessthanweb-order-to-board-sync' ) . '</h2>' . "\n";
 		$html .= '<figure>' . "\n";
 		$html .= '  <table>' . "\n";
 		$html .= '      <thead>' . "\n";
-		$html .= '          <tr><th scope="col">' . __( 'Setting', 'ltw-order-to-board-sync' ) . '</th><th scope="col">' . __( 'Value', 'ltw-order-to-board-sync' ) . '</th></tr>' . "\n";
+		$html .= '          <tr><th scope="col">' . esc_html__( 'Setting', 'lessthanweb-order-to-board-sync' ) . '</th><th scope="col">' . esc_html__( 'Value', 'lessthanweb-order-to-board-sync' ) . '</th></tr>' . "\n";
 		$html .= '      </thead>' . "\n";
 		$html .= '      <tbody>' . "\n";
 
-		$html .= $this->render_row( __( 'Server architecture', 'ltw-order-to-board-sync' ), $this->get_server_architecture() );
-		$html .= $this->render_row( __( 'Web server', 'ltw-order-to-board-sync' ), $this->get_web_server() );
-		$html .= $this->render_row( __( 'PHP version', 'ltw-order-to-board-sync' ), $this->get_php_version() );
-		$html .= $this->render_row( __( 'PHP SAPI', 'ltw-order-to-board-sync' ), $this->get_php_sapi() );
-		$html .= $this->render_row( __( 'PHP memory limit', 'ltw-order-to-board-sync' ), $this->get_php_memory_limit() );
-		$html .= $this->render_row( __( 'PHP max execution time', 'ltw-order-to-board-sync' ), $this->get_php_max_execution_time() );
-		$html .= $this->render_row( __( 'PHP max input vars', 'ltw-order-to-board-sync' ), $this->get_php_max_input_vars() );
-		$html .= $this->render_row( __( 'Upload max filesize', 'ltw-order-to-board-sync' ), $this->get_upload_max_filesize() );
-		$html .= $this->render_row( __( 'Post max size', 'ltw-order-to-board-sync' ), $this->get_post_max_size() );
-		$html .= $this->render_row( __( 'MySQL / MariaDB version', 'ltw-order-to-board-sync' ), $this->get_database_version() );
-		$html .= $this->render_row( __( 'Database charset', 'ltw-order-to-board-sync' ), $this->get_database_charset() );
-		$html .= $this->render_row( __( 'Database collation', 'ltw-order-to-board-sync' ), $this->get_database_collation() );
+		$html .= $this->render_row( __( 'Server architecture', 'lessthanweb-order-to-board-sync' ), $this->get_server_architecture() );
+		$html .= $this->render_row( __( 'Web server', 'lessthanweb-order-to-board-sync' ), $this->get_web_server() );
+		$html .= $this->render_row( __( 'PHP version', 'lessthanweb-order-to-board-sync' ), $this->get_php_version() );
+		$html .= $this->render_row( __( 'PHP SAPI', 'lessthanweb-order-to-board-sync' ), $this->get_php_sapi() );
+		$html .= $this->render_row( __( 'PHP memory limit', 'lessthanweb-order-to-board-sync' ), $this->get_php_memory_limit() );
+		$html .= $this->render_row( __( 'PHP max execution time', 'lessthanweb-order-to-board-sync' ), $this->get_php_max_execution_time() );
+		$html .= $this->render_row( __( 'PHP max input vars', 'lessthanweb-order-to-board-sync' ), $this->get_php_max_input_vars() );
+		$html .= $this->render_row( __( 'Upload max filesize', 'lessthanweb-order-to-board-sync' ), $this->get_upload_max_filesize() );
+		$html .= $this->render_row( __( 'Post max size', 'lessthanweb-order-to-board-sync' ), $this->get_post_max_size() );
+		$html .= $this->render_row( __( 'MySQL / MariaDB version', 'lessthanweb-order-to-board-sync' ), $this->get_database_version() );
+		$html .= $this->render_row( __( 'Database charset', 'lessthanweb-order-to-board-sync' ), $this->get_database_charset() );
+		$html .= $this->render_row( __( 'Database collation', 'lessthanweb-order-to-board-sync' ), $this->get_database_collation() );
 
 		$html .= '      </tbody>' . "\n";
 		$html .= '  </table>' . "\n";
@@ -84,26 +85,27 @@ class System_Info {
 	 *
 	 */
 	public function display_website_info(): string {
-		$html = '<h2>' . __( 'WordPress Environment', 'ltw-order-to-board-sync' ) . '</h2>' . "\n";
+		// Escape translated strings as they are inserted into generated HTML.
+		$html = '<h2>' . esc_html__( 'WordPress Environment', 'lessthanweb-order-to-board-sync' ) . '</h2>' . "\n";
 		$html .= '<figure>' . "\n";
 		$html .= '  <table>' . "\n";
 		$html .= '      <thead>' . "\n";
-		$html .= '          <tr><th scope="col">' . __( 'Setting', 'ltw-order-to-board-sync' ) . '</th><th scope="col">' . __( 'Value', 'ltw-order-to-board-sync' ) . '</th></tr>' . "\n";
+		$html .= '          <tr><th scope="col">' . esc_html__( 'Setting', 'lessthanweb-order-to-board-sync' ) . '</th><th scope="col">' . esc_html__( 'Value', 'lessthanweb-order-to-board-sync' ) . '</th></tr>' . "\n";
 		$html .= '      </thead>' . "\n";
 		$html .= '      <tbody>' . "\n";
 
-		$html .= $this->render_row( __( 'WordPress version', 'ltw-order-to-board-sync' ), $this->get_wordpress_version() );
-		$html .= $this->render_row( __( 'Site URL', 'ltw-order-to-board-sync' ), $this->get_site_url() );
-		$html .= $this->render_row( __( 'Home URL', 'ltw-order-to-board-sync' ), $this->get_home_url() );
-		$html .= $this->render_row( __( 'Is multisite', 'ltw-order-to-board-sync' ), $this->get_is_multisite() );
-		$html .= $this->render_row( __( 'Site language', 'ltw-order-to-board-sync' ), $this->get_site_language() );
-		$html .= $this->render_row( __( 'Timezone', 'ltw-order-to-board-sync' ), $this->get_timezone() );
-		$html .= $this->render_row( __( 'Permalink structure', 'ltw-order-to-board-sync' ), $this->get_permalink_structure() );
-		$html .= $this->render_row( __( 'WP memory limit', 'ltw-order-to-board-sync' ), $this->get_wp_memory_limit() );
-		$html .= $this->render_row( __( 'WP debug mode', 'ltw-order-to-board-sync' ), $this->get_wp_debug_mode() );
-		$html .= $this->render_row( __( 'Active theme', 'ltw-order-to-board-sync' ), $this->get_active_theme() );
-		$html .= $this->render_row_html( __( 'Active Plugins', 'ltw-order-to-board-sync' ), $this->get_active_plugins_html() );
-		$html .= $this->render_row( __( 'Search engine visibility', 'ltw-order-to-board-sync' ), $this->get_search_engine_visibility() );
+		$html .= $this->render_row( __( 'WordPress version', 'lessthanweb-order-to-board-sync' ), $this->get_wordpress_version() );
+		$html .= $this->render_row( __( 'Site URL', 'lessthanweb-order-to-board-sync' ), $this->get_site_url() );
+		$html .= $this->render_row( __( 'Home URL', 'lessthanweb-order-to-board-sync' ), $this->get_home_url() );
+		$html .= $this->render_row( __( 'Is multisite', 'lessthanweb-order-to-board-sync' ), $this->get_is_multisite() );
+		$html .= $this->render_row( __( 'Site language', 'lessthanweb-order-to-board-sync' ), $this->get_site_language() );
+		$html .= $this->render_row( __( 'Timezone', 'lessthanweb-order-to-board-sync' ), $this->get_timezone() );
+		$html .= $this->render_row( __( 'Permalink structure', 'lessthanweb-order-to-board-sync' ), $this->get_permalink_structure() );
+		$html .= $this->render_row( __( 'WP memory limit', 'lessthanweb-order-to-board-sync' ), $this->get_wp_memory_limit() );
+		$html .= $this->render_row( __( 'WP debug mode', 'lessthanweb-order-to-board-sync' ), $this->get_wp_debug_mode() );
+		$html .= $this->render_row( __( 'Active theme', 'lessthanweb-order-to-board-sync' ), $this->get_active_theme() );
+		$html .= $this->render_row_html( __( 'Active Plugins', 'lessthanweb-order-to-board-sync' ), $this->get_active_plugins_html() );
+		$html .= $this->render_row( __( 'Search engine visibility', 'lessthanweb-order-to-board-sync' ), $this->get_search_engine_visibility() );
 
 		$html .= '      </tbody>' . "\n";
 		$html .= '  </table>' . "\n";
@@ -122,38 +124,38 @@ class System_Info {
     */
     public function get_plain_text_report(): string {
         $lines   = [];
-        $lines[] = '=== ' . __( 'lessthanweb Woocommerce Trello Status Report', 'ltw-order-to-board-sync' ) . ' ===';
+        $lines[] = '=== ' . __( 'lessthanweb Woocommerce Trello Status Report', 'lessthanweb-order-to-board-sync' ) . ' ===';
         $lines[] = '';
-        $lines[] =  __( '--- Server Environment ---', 'ltw-order-to-board-sync' );
-        $lines[] = __( 'Server architecture: ', 'ltw-order-to-board-sync' ) . $this->get_server_architecture();
-        $lines[] = __( 'Web server: ', 'ltw-order-to-board-sync' ) . $this->get_web_server();
-        $lines[] = __( 'PHP version: ', 'ltw-order-to-board-sync' ) . $this->get_php_version();
-        $lines[] = __( 'PHP SAPI: ', 'ltw-order-to-board-sync' ) . $this->get_php_sapi();
-        $lines[] = __( 'PHP memory limit: ', 'ltw-order-to-board-sync' ) . $this->get_php_memory_limit();
-        $lines[] = __( 'PHP max execution time: ', 'ltw-order-to-board-sync' ) . $this->get_php_max_execution_time();
-        $lines[] = __( 'PHP max input vars: ', 'ltw-order-to-board-sync' ) . $this->get_php_max_input_vars();
-        $lines[] = __( 'Upload max filesize: ', 'ltw-order-to-board-sync' ) . $this->get_upload_max_filesize();
-        $lines[] = __( 'Post max size: ', 'ltw-order-to-board-sync' ) . $this->get_post_max_size();
-        $lines[] = __( 'MySQL / MariaDB version: ', 'ltw-order-to-board-sync' ) . $this->get_database_version();
-        $lines[] = __( 'Database charset: ', 'ltw-order-to-board-sync' ) . $this->get_database_charset();
-        $lines[] = __( 'Database collation: ', 'ltw-order-to-board-sync' ) . $this->get_database_collation();
+        $lines[] =  __( '--- Server Environment ---', 'lessthanweb-order-to-board-sync' );
+        $lines[] = __( 'Server architecture: ', 'lessthanweb-order-to-board-sync' ) . $this->get_server_architecture();
+        $lines[] = __( 'Web server: ', 'lessthanweb-order-to-board-sync' ) . $this->get_web_server();
+        $lines[] = __( 'PHP version: ', 'lessthanweb-order-to-board-sync' ) . $this->get_php_version();
+        $lines[] = __( 'PHP SAPI: ', 'lessthanweb-order-to-board-sync' ) . $this->get_php_sapi();
+        $lines[] = __( 'PHP memory limit: ', 'lessthanweb-order-to-board-sync' ) . $this->get_php_memory_limit();
+        $lines[] = __( 'PHP max execution time: ', 'lessthanweb-order-to-board-sync' ) . $this->get_php_max_execution_time();
+        $lines[] = __( 'PHP max input vars: ', 'lessthanweb-order-to-board-sync' ) . $this->get_php_max_input_vars();
+        $lines[] = __( 'Upload max filesize: ', 'lessthanweb-order-to-board-sync' ) . $this->get_upload_max_filesize();
+        $lines[] = __( 'Post max size: ', 'lessthanweb-order-to-board-sync' ) . $this->get_post_max_size();
+        $lines[] = __( 'MySQL / MariaDB version: ', 'lessthanweb-order-to-board-sync' ) . $this->get_database_version();
+        $lines[] = __( 'Database charset: ', 'lessthanweb-order-to-board-sync' ) . $this->get_database_charset();
+        $lines[] = __( 'Database collation: ', 'lessthanweb-order-to-board-sync' ) . $this->get_database_collation();
         $lines[] = '';
-        $lines[] = __( '--- WordPress Environment ---', 'ltw-order-to-board-sync' );
-        $lines[] = __( 'WordPress version: ', 'ltw-order-to-board-sync' ) . $this->get_wordpress_version();
-        $lines[] = __( 'Site URL: ', 'ltw-order-to-board-sync' ) . $this->get_site_url();
-        $lines[] = __( 'Home URL: ', 'ltw-order-to-board-sync' ) . $this->get_home_url();
-        $lines[] = __( 'Is multisite: ', 'ltw-order-to-board-sync' ) . $this->get_is_multisite();
-        $lines[] = __( 'Site language: ', 'ltw-order-to-board-sync' ) . $this->get_site_language();
-        $lines[] = __( 'Timezone: ', 'ltw-order-to-board-sync' ) . $this->get_timezone();
-        $lines[] = __( 'Permalink structure: ', 'ltw-order-to-board-sync' ) . $this->get_permalink_structure();
-        $lines[] = __( 'WP memory limit: ', 'ltw-order-to-board-sync' ) . $this->get_wp_memory_limit();
-        $lines[] = __( 'WP debug mode: ', 'ltw-order-to-board-sync' ) . $this->get_wp_debug_mode();
-        $lines[] = __( 'Active theme: ', 'ltw-order-to-board-sync' ) . $this->get_active_theme();
-        $lines[] = __( 'Active plugins: ', 'ltw-order-to-board-sync' ) . $this->get_active_plugins_count();
+        $lines[] = __( '--- WordPress Environment ---', 'lessthanweb-order-to-board-sync' );
+        $lines[] = __( 'WordPress version: ', 'lessthanweb-order-to-board-sync' ) . $this->get_wordpress_version();
+        $lines[] = __( 'Site URL: ', 'lessthanweb-order-to-board-sync' ) . $this->get_site_url();
+        $lines[] = __( 'Home URL: ', 'lessthanweb-order-to-board-sync' ) . $this->get_home_url();
+        $lines[] = __( 'Is multisite: ', 'lessthanweb-order-to-board-sync' ) . $this->get_is_multisite();
+        $lines[] = __( 'Site language: ', 'lessthanweb-order-to-board-sync' ) . $this->get_site_language();
+        $lines[] = __( 'Timezone: ', 'lessthanweb-order-to-board-sync' ) . $this->get_timezone();
+        $lines[] = __( 'Permalink structure: ', 'lessthanweb-order-to-board-sync' ) . $this->get_permalink_structure();
+        $lines[] = __( 'WP memory limit: ', 'lessthanweb-order-to-board-sync' ) . $this->get_wp_memory_limit();
+        $lines[] = __( 'WP debug mode: ', 'lessthanweb-order-to-board-sync' ) . $this->get_wp_debug_mode();
+        $lines[] = __( 'Active theme: ', 'lessthanweb-order-to-board-sync' ) . $this->get_active_theme();
+        $lines[] = __( 'Active plugins: ', 'lessthanweb-order-to-board-sync' ) . $this->get_active_plugins_count();
         $lines[] = $this->get_active_plugins_plain_text();
-        $lines[] = __( 'Search engine visibility: ', 'ltw-order-to-board-sync' ) . $this->get_search_engine_visibility();
+        $lines[] = __( 'Search engine visibility: ', 'lessthanweb-order-to-board-sync' ) . $this->get_search_engine_visibility();
         $lines[] = '';
-        $lines[] = __( '=== End of Report ===', 'ltw-order-to-board-sync' );
+        $lines[] = __( '=== End of Report ===', 'lessthanweb-order-to-board-sync' );
 
         return implode( "\n", $lines );
     }
@@ -190,7 +192,8 @@ class System_Info {
 	 *
 	 */
 	private function get_web_server(): string {
-		return ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? (string) wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) : __( 'Unable to determine', 'ltw-order-to-board-sync' );
+		// Treat server metadata as request-controlled and return only sanitized text.
+		return isset( $_SERVER['SERVER_SOFTWARE'] ) && is_string( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : __( 'Unable to determine', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -236,7 +239,7 @@ class System_Info {
 	 *
 	 */
 	private function get_php_max_execution_time(): string {
-		return (string) ini_get( 'max_execution_time' ) . __( ' seconds', 'ltw-order-to-board-sync' );
+		return (string) ini_get( 'max_execution_time' ) . __( ' seconds', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -283,7 +286,7 @@ class System_Info {
 		global $wpdb;
 
 		if ( ! isset( $wpdb ) || ! is_object( $wpdb ) ) {
-			return __( 'N/A (wpdb not available)', 'ltw-order-to-board-sync' );
+			return __( 'N/A (wpdb not available)', 'lessthanweb-order-to-board-sync' );
 		}
 
 		// Prefer the full server info string when available.
@@ -299,10 +302,10 @@ class System_Info {
 		if ( method_exists( $wpdb, 'db_version' ) ) {
 			$version = $wpdb->db_version();
 
-			return is_string( $version ) ? $version : __( 'Unknown', 'ltw-order-to-board-sync' );
+			return is_string( $version ) ? $version : __( 'Unknown', 'lessthanweb-order-to-board-sync' );
 		}
 
-		return __( 'Unknown', 'ltw-order-to-board-sync' );
+		return __( 'Unknown', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -315,7 +318,7 @@ class System_Info {
 	private function get_database_charset(): string {
 		global $wpdb;
 
-		return isset( $wpdb->charset ) ? (string) $wpdb->charset : __( 'N/A', 'ltw-order-to-board-sync' );
+		return isset( $wpdb->charset ) ? (string) $wpdb->charset : __( 'N/A', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -328,7 +331,7 @@ class System_Info {
 	private function get_database_collation(): string {
 		global $wpdb;
 
-		return isset( $wpdb->collate ) ? (string) $wpdb->collate : __( 'N/A', 'ltw-order-to-board-sync' );
+		return isset( $wpdb->collate ) ? (string) $wpdb->collate : __( 'N/A', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/* -------------------------------------------------------------------------
@@ -376,7 +379,7 @@ class System_Info {
 	 *
 	 */
 	private function get_is_multisite(): string {
-		return is_multisite() ? __( 'Yes', 'ltw-order-to-board-sync' ) : __( 'No', 'ltw-order-to-board-sync' );
+		return is_multisite() ? __( 'Yes', 'lessthanweb-order-to-board-sync' ) : __( 'No', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -406,7 +409,7 @@ class System_Info {
 
 		$offset = get_option( 'gmt_offset' );
 
-		return is_numeric( $offset ) ? 'UTC' . ( (float) $offset >= 0 ? '+' : '' ) . $offset : __( 'Unknown', 'ltw-order-to-board-sync' );
+		return is_numeric( $offset ) ? 'UTC' . ( (float) $offset >= 0 ? '+' : '' ) . $offset : __( 'Unknown', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -419,7 +422,7 @@ class System_Info {
 	private function get_permalink_structure(): string {
 		$structure = get_option( 'permalink_structure' );
 
-		return ( is_string( $structure ) && $structure !== '' ) ? $structure : __( 'Plain', 'ltw-order-to-board-sync' );
+		return ( is_string( $structure ) && $structure !== '' ) ? $structure : __( 'Plain', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -434,7 +437,7 @@ class System_Info {
 			return (string) WP_MEMORY_LIMIT;
 		}
 
-		return __( 'Not defined (using PHP default)', 'ltw-order-to-board-sync' );
+		return __( 'Not defined (using PHP default)', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -445,7 +448,7 @@ class System_Info {
 	 *
 	 */
 	private function get_wp_debug_mode(): string {
-		return ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? __( 'Enabled', 'ltw-order-to-board-sync' ) : __( 'Disabled', 'ltw-order-to-board-sync' );
+		return ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? __( 'Enabled', 'lessthanweb-order-to-board-sync' ) : __( 'Disabled', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -459,7 +462,7 @@ class System_Info {
 		$theme = wp_get_theme();
 
 		if ( ! $theme->exists() ) {
-			return __( 'Unknown', 'ltw-order-to-board-sync' );
+			return __( 'Unknown', 'lessthanweb-order-to-board-sync' );
 		}
 
 		$name    = $theme->get( 'Name' );
@@ -469,7 +472,7 @@ class System_Info {
 		$label = sprintf( '%s (v%s)', $name, $version );
 
 		if ( $parent ) {
-			$label .= sprintf( __( ' — Child of %s', 'ltw-order-to-board-sync' ), $parent->get( 'Name' ) );
+			$label .= sprintf( __( ' — Child of %s', 'lessthanweb-order-to-board-sync' ), $parent->get( 'Name' ) );
 		}
 
 		return $label;
@@ -484,7 +487,7 @@ class System_Info {
 	 */
 	private function get_active_plugins_count(): string {
 		if ( ! function_exists( 'get_option' ) ) {
-			return __( 'N/A', 'ltw-order-to-board-sync' );
+			return __( 'N/A', 'lessthanweb-order-to-board-sync' );
 		}
 
 		$active = get_option( 'active_plugins', [] );
@@ -510,7 +513,7 @@ class System_Info {
 	 *
 	 */
 	private function get_search_engine_visibility(): string {
-		return (bool) get_option( 'blog_public' ) ? __( 'Visible', 'ltw-order-to-board-sync' ) : __( 'Discouraged', 'ltw-order-to-board-sync' );
+		return (bool) get_option( 'blog_public' ) ? __( 'Visible', 'lessthanweb-order-to-board-sync' ) : __( 'Discouraged', 'lessthanweb-order-to-board-sync' );
 	}
 
 	/**
@@ -589,18 +592,18 @@ class System_Info {
 		$plugins = $this->get_active_plugins_data();
 
 		if ( empty( $plugins ) ) {
-			return __( 'None', 'ltw-order-to-board-sync' );
+			return esc_html__( 'None', 'lessthanweb-order-to-board-sync' );
 		}
 
 		// Get count of all active plugins
-		$html = __( 'Total: ', 'ltw-order-to-board-sync' ) . $this->get_active_plugins_count() . '<br>'; 
+		$html = esc_html__( 'Total: ', 'lessthanweb-order-to-board-sync' ) . $this->get_active_plugins_count() . '<br>';
 
 		$html .= '<ul>' . "\n";
 
 		foreach ( $plugins as $plugin ) {
 			$name    = esc_html( $plugin['name'] );
 			$version = $plugin['version'] !== '' ? ' (v' . esc_html( $plugin['version'] ) . ')' : '';
-			$suffix  = $plugin['network'] ? ' <em>' . __( '[Network]', 'ltw-order-to-board-sync' ) . '</em>' : '';
+			$suffix  = $plugin['network'] ? ' <em>' . esc_html__( '[Network]', 'lessthanweb-order-to-board-sync' ) . '</em>' : '';
 
 			if ( $plugin['uri'] !== '' ) {
 				$uri  = esc_url( $plugin['uri'] );
@@ -629,7 +632,7 @@ class System_Info {
 		$plugins = $this->get_active_plugins_data();
 
 		if ( empty( $plugins ) ) {
-			return __( '  None', 'ltw-order-to-board-sync' );
+			return __( '  None', 'lessthanweb-order-to-board-sync' );
 		}
 
 		$lines = [];
@@ -706,51 +709,14 @@ class System_Info {
 	*
 	*/
 	private function render_copy_button( string $plain_text ): string {
-		// Escape for safe use inside a HTML data attribute / JS string.
-		$encoded = esc_attr( $plain_text );
-
+		// Keep the report in the DOM so the enqueued admin script can read it.
 		$html  = '<section>' . "\n";
 		$html .= '	<p>' . "\n";
-		$html .= '		<button type="button" id="wp-status-copy-btn">' . __( 'Copy status report', 'ltw-order-to-board-sync' ) . '</button>' . "\n";
+		$html .= '		<button type="button" id="wp-status-copy-btn">' . esc_html__( 'Copy status report', 'lessthanweb-order-to-board-sync' ) . '</button>' . "\n";
 		$html .= '		<span id="wp-status-copy-feedback" aria-live="polite"></span>' . "\n";
 		$html .= '	</p>' . "\n";
 		$html .= '	<textarea id="wp-status-plain-text" readonly hidden>' . esc_textarea( $plain_text ) . '</textarea>' . "\n";
 		$html .= '</section>' . "\n";
-		$html .= '<script>' . "\n";
-		$html .= '(function () {' . "\n";
-		$html .= '    var btn = document.getElementById("wp-status-copy-btn");' . "\n";
-		$html .= '    var feedback = document.getElementById("wp-status-copy-feedback");' . "\n";
-		$html .= '    var textarea = document.getElementById("wp-status-plain-text");' . "\n";
-		$html .= '    if (!btn || !textarea) { return; }' . "\n";
-		$html .= '    btn.addEventListener("click", function () {' . "\n";
-		$html .= '        var text = textarea.value;' . "\n";
-		$html .= '        function showFeedback(msg) {' . "\n";
-		$html .= '            if (feedback) { feedback.textContent = msg; }' . "\n";
-		$html .= '            setTimeout(function () { if (feedback) { feedback.textContent = ""; } }, 2500);' . "\n";
-		$html .= '        }' . "\n";
-		$html .= '        if (navigator.clipboard && navigator.clipboard.writeText) {' . "\n";
-		$html .= '            navigator.clipboard.writeText(text).then(function () {' . "\n";
-		$html .= '                showFeedback("Copied!");' . "\n";
-		$html .= '            }).catch(function () {' . "\n";
-		$html .= '                fallbackCopy();' . "\n";
-		$html .= '            });' . "\n";
-		$html .= '        } else {' . "\n";
-		$html .= '            fallbackCopy();' . "\n";
-		$html .= '        }' . "\n";
-		$html .= '        function fallbackCopy() {' . "\n";
-		$html .= '            textarea.hidden = false;' . "\n";
-		$html .= '            textarea.select();' . "\n";
-		$html .= '            try {' . "\n";
-		$html .= '                document.execCommand("copy");' . "\n";
-		$html .= '                showFeedback("Copied!");' . "\n";
-		$html .= '            } catch (e) {' . "\n";
-		$html .= '                showFeedback("Copy failed – please select the text manually.");' . "\n";
-		$html .= '            }' . "\n";
-		$html .= '            textarea.hidden = true;' . "\n";
-		$html .= '        }' . "\n";
-		$html .= '    });' . "\n";
-		$html .= '})();' . "\n";
-		$html .= '</script>' . "\n";
 
 		return $html;
 	}

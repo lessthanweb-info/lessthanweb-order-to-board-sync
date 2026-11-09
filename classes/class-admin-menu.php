@@ -1,11 +1,11 @@
 <?php
-namespace LTW\Order_To_Board_Sync\Admin;
+namespace lessthanweb\Order_To_Board_Sync\Admin;
 
 /**
  * Register submenu item for WooCommerce menu
  *
  * @author		lessthanweb
- * @package 	LTW_Order_To_Board_Sync
+ * @package 	lessthanweb_Order_To_Board_Sync
  * @since		1.0.0
  *
  */
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LTW\Order_To_Board_Sync\Admin\Page;
+use lessthanweb\Order_To_Board_Sync\Admin\Page;
 
 /**
  * Menu Class
@@ -44,10 +44,10 @@ class Menu {
     public function register_menu(): void {
         add_submenu_page(
 			'woocommerce',
-            __( 'Trello', 'ltw-order-to-board-sync' ),
-            __( 'Trello', 'ltw-order-to-board-sync' ),
+            __( 'Trello', 'lessthanweb-order-to-board-sync' ),
+            __( 'Trello', 'lessthanweb-order-to-board-sync' ),
             'manage_options',
-            'ltw-order-to-board-sync',
+            'lessthanweb-order-to-board-sync',
             [ $this->page, 'render' ]
         ); 
     }
